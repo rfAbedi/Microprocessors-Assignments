@@ -36,8 +36,6 @@ get_n:
     ; INT 21H
     ; ; ---------------
 
-
-
     ; --- TERMINATE ---
     MOV AH, 4CH
     INT 21H
@@ -62,7 +60,7 @@ PRINT_BR ENDP
 FACT PROC ; CALCULATE FACTORIAL OF n AND STORE IT IN (DX, AX)
 
     ; --- COUNTER = 1 ---
-    MOV BL, 01H
+    MOV CX, 01H
     ; -------------------
 
     ; --- AX = 1 ---
@@ -71,12 +69,15 @@ FACT PROC ; CALCULATE FACTORIAL OF n AND STORE IT IN (DX, AX)
 
     BACK:
     ; --- FINISH IF COUNTER == n ---
-    CMP BL, n
-    JA FINISH
+    MOV BX, 00H
+    MOV BL, n
+    CMP CX, BX
+    JA FINISH ; FINISH WHEN COUNTER > n
     ; ------------------------------
-    MUL BL ; (DX, AX) = BL * AX
-    INC BL ; BL++
-    LOOP BACK ;
+    MUL CX ; (DX, AX) = CX * AX
+    INC CX ; COUNTER++
+    INC CX ; COUNTER++
+    LOOP BACK ; COUNTER--
 
     FINISH:
     RET
