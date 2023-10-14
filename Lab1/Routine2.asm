@@ -5,9 +5,6 @@
 .CODE  
 
 MAIN    PROC FAR
-    MOV AX, @DATA
-    MOV DS, AX
-
     CALL TIMEOUT
         
     MOV AH, 4CH
