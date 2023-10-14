@@ -15,9 +15,11 @@ MAIN    PROC FAR
     BACK:
         CMP BL, 00H
         JE FINISH
+        ; --- PRINT char ---
         MOV DL, char
         MOV AH, 02H
         INT 21H
+        ; ------------------
         DEC BL
         LOOP BACK
     FINISH:
