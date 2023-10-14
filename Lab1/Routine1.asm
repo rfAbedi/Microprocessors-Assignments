@@ -1,6 +1,7 @@
 .MODEL SMALL
 .STACK 64
 .DATA
+    TEN DW 000AH
     n DB ?
     r DB 01H
     x_fact DB ? ; IS USED TO CALCULATE factorial of x
@@ -10,7 +11,9 @@
     r_fact DW ?
     n_r_fact DW ?
     comb DB ? ; ANSWER OF Combination
-    comb_arr DB 10 DUP(0)
+    OUTER_LOOP_COUNT_TEMP DW ?
+    STACK_COUNT DB 00H
+    STROUT DB 50 DUP(0)
 .CODE
 
 MAIN    PROC FAR
@@ -78,21 +81,70 @@ L1:
         MOV AX, n_fact
         SUB DX, DX
         DIV r_fact
+        SUB DX, DX
         DIV n_r_fact
         MOV comb, AL
         ; ----------------------
 
 
-    ; **************************** TODO: SAVE "comb" in "comb_arr" ****************************
-    SUB BX, BX
-    MOV BL, r
-    MOV comb_arr[BX], comb 
-    ; ******************************************************************************************
+    SUB AX, AX ; Clear AX
+    MOV AL, comb ; AX = comb
+
+convert_to_ascii:
+        SUB DX, DX ; Clear DX for division
+        DIV TEN ; Divide AX by 10
+        ADD DL, '0' ; Convert the remainder to ASCII
+
+        ; ************ PUSH NUMBERS TO PRINT IT (REVERSE OF REVERSE = ITSELF) ************
+        PUSH DX
+        INC STACK_COUNT
+        ; *********************************************************************************
+
+        CMP AX, 0000H ; CHECKING IF AX IS ZERO
+        JNE convert_to_ascii ; JUMP IF AS IS ZERO
+
+
+
+save_ascii:
+    ; ************ POP NUMBERS TO PRINT IT (REVERSE OF REVERSE = ITSELF) ************
+    CMP STACK_COUNT, 00H
+    JE save_end
+    POP DX
+    DEC STACK_COUNT
+    ; ********************************************************************************
+
+
+    ; **************************** SAVE OUTPUT comb NUMBERS AS ASCII ****************************
+    MOV DI, OFFSET STROUT
+    MOV [DI], DL
+    INC DI
+    ; *******************************************************************************************
+
+    ; --- PRINT char ---
+    MOV BX, AX
+    MOV AH, 02H
+    INT 21H
+    MOV AX, BX
+    ; ------------------
+    
+    JMP save_ascii
+
+save_end:
+
+    ; --- SAVE AND PRINT SPACE ---
+    MOV [DI], ' ' ; SAVE THE SPACE BETWEEN NUMBERS
+    INC DI
+    MOV DL, 20H ; load ASCII code of space into DL
+    MOV AH, 02H ; select service 02H (print character)
+    INT 21H ; call DOS interrupt
+    ; ----------------------------
 
     INC CX ; COUNTER++
     INC CX ; COUNTER++
     LOOP L1 ; COUNTER--
+
 L1_END:
+
 
     ; --- TERMINATE ---
     MOV AH, 4CH
@@ -117,11 +169,13 @@ PRINT_BR ENDP
 
 FACT PROC ; Saves x! IN (DX, AX)
 
+    MOV OUTER_LOOP_COUNT_TEMP, CX
+
     MOV CX, 01H ; COUNTER = 1
     MOV AX, 01H ; AX = 1 
     MOV DX, 0000H ; CLEAR DX
 
-    BACK:
+BACK:
     MOV BH, 00H
     MOV BL, x_fact
     CMP CX, BX
@@ -131,7 +185,9 @@ FACT PROC ; Saves x! IN (DX, AX)
     INC CX ; COUNTER++
     LOOP BACK ; COUNTER--
 
-    FINISH:
+
+FINISH:
+    MOV CX, OUTER_LOOP_COUNT_TEMP
     RET
     ; THE ANSWER IS STORED IN (DX, AX)
     
