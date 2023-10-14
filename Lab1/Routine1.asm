@@ -2,9 +2,16 @@
 .STACK 64
 .DATA
     n DB ?
+    r DB 01H
+    x_fact DB ? ; IS USED TO CALCULATE factorial of x
     lf DB 10
     cr DB 13
-    RESULT DW 3 DUP(?)
+    n_fact DW ?
+    r_fact DW ?
+    n_r_fact DW ?
+    comb DB ? ; ANSWER OF Combination
+    ; STROUT
+    ; RESULT DW 3 DUP(?)
 .CODE
 
 MAIN    PROC FAR
@@ -28,13 +35,56 @@ get_n:
 
     CALL PRINT_BR
 
-    CALL FACT
 
-    ; ; --- PRINT n ---
-    ; MOV DL, AL
-    ; MOV AH, 02H
-    ; INT 21H
-    ; ; ---------------
+calculation:
+L1:
+    MOV CX, 0001H; COUNTER = n
+    CMP CX, n
+    JA L1_END ; FINISH WHEN COUNTER > n
+
+        MOV r, CL ; r = COUNTER
+
+        ; --- n! ---
+        MOV AH, n
+        MOV x_fact, AH ; x = n
+        MOV BL, AH
+        CALL FACT
+        SHL DX, 16 ; SHIFT LEFT 16 BITS
+        OR DX, AX ; CONCAT DX AND AX
+        MOV n_fact, DX
+        ; ----------
+
+        ; --- r! ---
+        MOV DL, r
+        MOV x_fact, DL ; x = r
+        CALL FACT
+        SHL DX, 16 ; SHIFT LEFT 16 BITS
+        OR DX, AX ; CONCAT DX AND AX
+        MOV r_fact, DX
+        ; ----------
+
+        ; --- (n-r)! ---
+        MOV DL, n ; DL = n
+        SUB DL, r ; DL = n - r
+        MOV x_fact, DL ; x = n - r
+        CALL FACT
+        SHL DX, 16 ; SHIFT LEFT 16 BITS
+        OR DX, AX ; CONCAT DX AND AX
+        MOV n_r_fact, DX
+        ; ---------------
+
+        ; --- n!/(r! (n-r)!) ---
+        MOV AX, n_fact
+        SUB DX, DX
+        DIV r_fact
+        DIV n_r_fact
+        MOV comb, AL
+        ; ----------------------
+
+    INC CX ; COUNTER++
+    INC CX ; COUNTER++
+    LOOP L1 ; COUNTER--
+L1_END:
 
     ; --- TERMINATE ---
     MOV AH, 4CH
@@ -57,23 +107,17 @@ PRINT_BR PROC ; PRINTS NEWLINE
 PRINT_BR ENDP
 
 
-FACT PROC ; CALCULATE FACTORIAL OF n AND STORE IT IN (DX, AX)
+FACT PROC ; Saves x! IN (DX, AX)
 
-    ; --- COUNTER = 1 ---
-    MOV CX, 01H
-    ; -------------------
-
-    ; --- AX = 1 ---
-    MOV AX, 01H
-    ; --------------
+    MOV CX, 01H ; COUNTER = 1
+    MOV AX, 01H ; AX = 1 
+    MOV DX, 0000H ; CLEAR DX
 
     BACK:
-    ; --- FINISH IF COUNTER == n ---
-    MOV BX, 00H
-    MOV BL, n
+    MOV BH, 00H
+    MOV BL, x_fact
     CMP CX, BX
-    JA FINISH ; FINISH WHEN COUNTER > n
-    ; ------------------------------
+    JA FINISH ; FINISH WHEN COUNTER > x
     MUL CX ; (DX, AX) = CX * AX
     INC CX ; COUNTER++
     INC CX ; COUNTER++
