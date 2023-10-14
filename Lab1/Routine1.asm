@@ -10,8 +10,7 @@
     r_fact DW ?
     n_r_fact DW ?
     comb DB ? ; ANSWER OF Combination
-    ; STROUT
-    ; RESULT DW 3 DUP(?)
+    comb_arr DB 10 DUP(0)
 .CODE
 
 MAIN    PROC FAR
@@ -37,9 +36,11 @@ get_n:
 
 
 calculation:
+    MOV CX, 0000H; COUNTER = 0
 L1:
-    MOV CX, 0001H; COUNTER = n
-    CMP CX, n
+    ; MOV BL, n
+    ; CMP CL, BL
+    CMP CL, n
     JA L1_END ; FINISH WHEN COUNTER > n
 
         MOV r, CL ; r = COUNTER
@@ -80,6 +81,8 @@ L1:
         DIV n_r_fact
         MOV comb, AL
         ; ----------------------
+
+        
 
     INC CX ; COUNTER++
     INC CX ; COUNTER++
