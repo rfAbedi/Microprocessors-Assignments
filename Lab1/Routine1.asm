@@ -21,6 +21,7 @@ MAIN    PROC FAR
     ; --- Data Segmant Define ---
     MOV AX, @DATA
     MOV DS, AX
+    MOV DI, OFFSET STROUT
     ; ---------------------------
 
 get_n:
@@ -33,6 +34,7 @@ get_n:
     MOV AH, AL
     AND AH, 0FH
     ; --------------------
+    DEC AH
     MOV n, AH ; SAVE TO n
 
     CALL PRINT_BR
@@ -115,7 +117,6 @@ save_ascii:
 
 
     ; **************************** SAVE OUTPUT comb NUMBERS AS ASCII ****************************
-    MOV DI, OFFSET STROUT
     MOV [DI], DL
     INC DI
     ; *******************************************************************************************
