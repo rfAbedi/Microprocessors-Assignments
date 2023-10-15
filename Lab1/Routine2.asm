@@ -1,10 +1,13 @@
 .MODEL SMALL
 .STACK 64
 .DATA
-    STROUT DB 'A'
+    STROUT DB 'ABCD'
 .CODE  
 
 MAIN    PROC FAR
+    MOV AX, @DATA
+    MOV DS, AX
+
     CALL TIMEOUT
         
     MOV AH, 4CH
@@ -25,10 +28,24 @@ DELAYING:
         CMP DH, BH
         JNE  DELAYING ;LOOP UNTIL CURRENT SYSTEM SECONDS REACH END TIME
 
-    MOV DL, STROUT ;PRINT STROUT
-    MOV AH, 02H
-    INT 21H
+    CALL PRINTSTRING
+
+return:
     RET
 TIMEOUT ENDP
+
+PRINTSTRING PROC
+    MOV CX, 04H ; COUNTER = Maximum length of String
+    MOV DI, OFFSET STROUT
+
+print:
+        MOV DL, [DI] ;PRINT STROUT
+        MOV AH, 02H
+        INT 21H
+        INC DI
+        LOOP print
+
+RET
+PRINTSTRING ENDP
 
     END MAIN
