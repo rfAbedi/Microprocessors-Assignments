@@ -55,18 +55,14 @@ L1:
         MOV x_fact, AH ; x = n
         MOV BL, AH
         CALL FACT
-        SHL DX, 16 ; SHIFT LEFT 16 BITS
-        OR DX, AX ; CONCAT DX AND AX
-        MOV n_fact, DX
+        MOV n_fact, AX
         ; ----------
 
         ; --- r! ---
         MOV DL, r
         MOV x_fact, DL ; x = r
         CALL FACT
-        SHL DX, 16 ; SHIFT LEFT 16 BITS
-        OR DX, AX ; CONCAT DX AND AX
-        MOV r_fact, DX
+        MOV r_fact, AX
         ; ----------
 
         ; --- (n-r)! ---
@@ -74,9 +70,7 @@ L1:
         SUB DL, r ; DL = n - r
         MOV x_fact, DL ; x = n - r
         CALL FACT
-        SHL DX, 16 ; SHIFT LEFT 16 BITS
-        OR DX, AX ; CONCAT DX AND AX
-        MOV n_r_fact, DX
+        MOV n_r_fact, AX
         ; ---------------
 
         ; --- n!/(r! (n-r)!) ---
