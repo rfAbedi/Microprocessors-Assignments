@@ -20,7 +20,7 @@
 MAIN    PROC FAR
 
     CALL KPEXT
-
+ُ
 ENDLESS:
 	JMP ENDLESS
 MAIN    ENDP
@@ -48,17 +48,11 @@ SAVE_DATA:
     DEC CH
     MOV N, CH
 
-WRITE_RAM:
-	MOV AX, RAM
-	MOV DS, AX
-	
-	MOV DI, 00H
-
 calculation:
     MOV CX, 0000H; COUNTER = 0
 L1:
     MOV AX, @DATA
-	MOV DS, AX
+	MOV DS, AX ; SET DS TO @DATA
 
     CMP CL, M
     JA L1_END ; FINISH WHEN COUNTER > M
@@ -101,7 +95,8 @@ L1:
     SUB BX, BX ; Clear AX
     MOV BL, comb ; AX = comb
 
-W_RAM:
+
+WRITE_RAM:
     MOV AX, RAM
     MOV DS, AX
     
@@ -115,12 +110,12 @@ W_RAM:
 L1_END:
     SUB BX, BX
     MOV BL, N
-    MOV DI, BX
+    MOV DI, BX ; DI = N
 
     MOV AX, RAM
     MOV DS, AX
 
-    MOV BL, [DI] ; READ M
+    MOV BL, [DI] ; READ Nth COMBINATION
 
     MOV AX, @DATA
     MOV DS, AX
@@ -130,7 +125,7 @@ L1_END:
 RET
 
 KPEXT    ENDP
-
+ِ
 
 FACT PROC ; Saves x! IN (DX, AX)
 
@@ -157,4 +152,4 @@ FINISH:
     ; THE ANSWER IS STORED IN (DX, AX)
     
 FACT ENDP
-    END MAIN
+    END MAINُ
