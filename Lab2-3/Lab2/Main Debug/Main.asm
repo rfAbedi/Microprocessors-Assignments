@@ -19,8 +19,11 @@
 
 MAIN    PROC FAR
 
+    MOV AX, @DATA
+	MOV DS, AX
+
     CALL KPEXT
-ُ
+
 ENDLESS:
 	JMP ENDLESS
 MAIN    ENDP
@@ -29,19 +32,15 @@ MAIN    ENDP
 
 KPEXT    PROC
 READ_ROM:
-	MOV AX, @DATA
-	MOV DS, AX
-	
+
 	MOV AX, ROM
-	MOV DS, AX
+	MOV ES, AX
         
-	MOV DI, 00H
-	MOV CL, [DI] ; READ M
-    MOV CH, [DI+1] ; READ N
+	MOV SI, 00H
+	MOV CL, ES:[SI] ; READ M
+    MOV CH, ES:[SI+1] ; READ N
 
 SAVE_DATA:
-    MOV AX, @DATA
-	MOV DS, AX
 
     DEC CL
     MOV M, CL
@@ -49,10 +48,11 @@ SAVE_DATA:
     MOV N, CH
 
 calculation:
+    MOV AX, RAM
+    MOV ES, AX
+
     MOV CX, 0000H; COUNTER = 0
 L1:
-    MOV AX, @DATA
-	MOV DS, AX ; SET DS TO @DATA
 
     CMP CL, M
     JA L1_END ; FINISH WHEN COUNTER > M
@@ -97,11 +97,8 @@ L1:
 
 
 WRITE_RAM:
-    MOV AX, RAM
-    MOV DS, AX
-    
     MOV DI, CX
-    MOV [DI], BL ; WRITE COMBINATION IN RAM
+    MOV ES:[DI], BL ; WRITE COMBINATION IN RAM
 
     INC CX ; COUNTER++
     INC CX ; COUNTER++
@@ -112,13 +109,7 @@ L1_END:
     MOV BL, N
     MOV DI, BX ; DI = N
 
-    MOV AX, RAM
-    MOV DS, AX
-
-    MOV BL, [DI] ; READ Nth COMBINATION
-
-    MOV AX, @DATA
-    MOV DS, AX
+    MOV BL, ES:[DI] ; READ Nth COMBINATION
 
     MOV KPMN, BL ; KPMN = M
 
@@ -152,4 +143,4 @@ FINISH:
     ; THE ANSWER IS STORED IN (DX, AX)
     
 FACT ENDP
-    END MAINُ
+    END MAIN
