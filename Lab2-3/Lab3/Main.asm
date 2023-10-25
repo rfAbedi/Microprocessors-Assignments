@@ -1,0 +1,29 @@
+.MODEL SMALL
+.STACK 64
+.DATA
+    ; --- IO 8285 PORTS ---
+    PORTA EQU 00H
+    PORTB EQU 02H
+    PORTC EQU 04H
+    PORT_CON EQU 06H
+    ; ---------------------
+
+    M DB ?
+    N DB ?
+    KPMN DB ?
+.CODE  
+
+MAIN    PROC FAR
+
+    MOV AX, @DATA
+	MOV DS, AX
+
+    CALL KPEXT
+
+ENDLESS:
+	JMP ENDLESS
+MAIN    ENDP
+
+ENDLESS:
+	JMP ENDLESS
+MAIN    ENDP
