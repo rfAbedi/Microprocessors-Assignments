@@ -15,6 +15,15 @@
     M DB ?
     N DB ?
     KPMN DB ?
+    ; -------------------------------------------
+    r DB 01H
+    x_fact DB ? ; IS USED TO CALCULATE factorial of x
+    n_fact DW ?
+    r_fact DW ?
+    n_r_fact DW ?
+    comb DB ? ; ANSWER OF Combination
+    OUTER_LOOP_COUNT_TEMP DW ?
+    ; -------------------------------------------
 .CODE  
 
 MAIN    PROC FAR
@@ -23,9 +32,17 @@ MAIN    PROC FAR
 	MOV DS, AX
 
     CALL SET_CNTRLREG
-    CALL SET_NUMBER_ZERO 
+    CALL CLEAR_DIGITS 
     
     CALL TRACK_KEYPAD
+    
+    CALL DELAY
+    CALL DELAY
+
+    ; CALL CLEAR_DIGITS
+    CALL CAL_KHPA
+    CALL BCD7SEG
+    CALL SHOW_NUMBER
 
 ENDLESS:
 	JMP ENDLESS
@@ -170,11 +187,11 @@ SHOW_NUMBER PROC ; GETS DX AS PARAMETER
 SHOW_NUMBER ENDP
 
 
-SET_NUMBER_ZERO PROC
+CLEAR_DIGITS PROC ; MAKES ALL DIGITS ZERO
     MOV DX, 0000H
     CALL SHOW_NUMBER
     RET
-SET_NUMBER_ZERO ENDP
+CLEAR_DIGITS ENDP
 
 
 SET_CNTRLREG PROC
@@ -194,6 +211,94 @@ DELAY PROC
    POP CX
 RET
 DELAY ENDP
+
+
+CAL_KHPA    PROC
+    DEC DH
+    MOV M, DH
+    DEC DL
+    MOV N, DL
+
+    ; --- M! ---
+    MOV AH, M
+    MOV x_fact, AH ; x = M
+    MOV BL, AH
+    CALL FACT
+    MOV n_fact, AX
+    ; ----------
+
+    ; --- N! ---
+    MOV DL, N
+    MOV x_fact, DL ; x = N
+    CALL FACT
+    MOV r_fact, AX
+    ; ----------
+
+    ; --- (M-N)! ---
+    MOV DL, M ; DL = M
+    SUB DL, N ; DL = M - N
+    MOV x_fact, DL ; x = M - N
+    CALL FACT
+    MOV n_r_fact, AX
+    ; ---------------
+
+    ; --- M!/(N! (M-N)!) ---
+    MOV AX, n_fact
+    SUB DX, DX
+    DIV r_fact
+    SUB DX, DX
+    DIV n_r_fact
+    MOV comb, AL
+    ; ----------------------
+
+    MOV DL, comb ; DL = comb (answer in binary)
+RET
+CAL_KHPA ENDP
+
+
+FACT PROC ; Saves x! IN (DX, AX)
+
+    MOV OUTER_LOOP_COUNT_TEMP, CX
+
+    MOV CX, 01H ; COUNTER = 1
+    MOV AX, 01H ; AX = 1 
+    MOV DX, 0000H ; CLEAR DX
+
+BACK:
+    MOV BH, 00H
+    MOV BL, x_fact
+    CMP CX, BX
+    JA FINISH ; FINISH WHEN COUNTER > x
+    MUL CX ; (DX, AX) = CX * AX
+    INC CX ; COUNTER++
+    INC CX ; COUNTER++
+    LOOP BACK ; COUNTER--
+
+
+FINISH:
+    MOV CX, OUTER_LOOP_COUNT_TEMP
+    RET
+    
+FACT ENDP ; THE ANSWER IS STORED IN (DX, AX)
+
+
+BIN2BCD PROC ; TAKES DL AS PARAMETER
+    XOR AH, AH
+    MOV AL, DL
+    MOV BL, 0AH ; AL / 10
+    DIV BL
+    MOV BH, AL ; AL = Quotient (Left Digit) | AL / 10
+    MOV BL, AH ; AH = Remainder (Right Digit) | AL % 10
+RET
+BIN2BCD ENDP ; RETURNS A 8-bit BCD IN BX
+
+
+BCD7SEG PROC ; TAKES DL AS PARAMETER
+    CALL BIN2BCD
+    MOV DX, BX
+RET
+BCD7SEG ENDP ; RETURNS DX AS A BCD NO. FOR 7SEG
+
 
 ; DO NOT REMOVE THIS LINE:
     END MAIN
