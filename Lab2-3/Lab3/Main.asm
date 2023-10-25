@@ -7,8 +7,11 @@
     PORTC EQU 04H ; IN - KEYPAD
     CNTRLREG EQU 06H
     CNTRLBYTE EQU 10001001B
-    ; ---------------------
-
+    ; --- KEYPAD COLUMN ACTIVATIONS ON PORT B ---
+    FIRST_COL EQU 00100000B
+    SECOND_COL EQU 01000000B
+    THIRD_COL EQU 10000000B
+    ; -------------------------------------------
     M DB ?
     N DB ?
     KPMN DB ?
@@ -21,7 +24,10 @@ MAIN    PROC FAR
 
     CALL SET_CNTRLREG
     CALL SET_NUMBER_ZERO 
+    
+    CALL TRACK_KEYPAD
 
+    CALL 
 ENDLESS:
 	JMP ENDLESS
 
@@ -31,15 +37,136 @@ MAIN    ENDP
 
 
 TRACK_KEYPAD PROC
+    MOV SI, 00H ; NUMBER OF NUMBERS TAKEN FROM KEYPAD
 
+TRACKING_LOOP:
+    CMP SI, 02H
+    JE TRACKING_FINISH
+
+    CHECK_FIRST_COL:
+        MOV AL, FIRST_COL
+        OUT PORTB, AL
+        IN AL, PORTC
+        AND AL, 0FH ; CHECKS IF ANY BUTTON IN COL IS PRESSED
+        JNZ HANDLE_FIRST_COL
+
+    CHECK_SECOND_COL:
+        MOV AL, SECOND_COL
+        OUT PORTB, AL
+        IN AL, PORTC
+        AND AL, 0FH ; CHECKS IF ANY BUTTON IN COL IS PRESSED
+        JNZ HANDLE_SECOND_COL
+    
+    CHECK_THIRD_COL:
+        MOV AL, THIRD_COL
+        OUT PORTB, AL
+        IN AL, PORTC
+        AND AL, 0FH ; CHECKS IF ANY BUTTON IN COL IS PRESSED
+        JNZ HANDLE_THIRD_COL
+
+    JMP TRACKING_LOOP
+
+    HANDLE_FIRST_COL: ; SWITCH CASE FOR CORRESPONDING COLUMN
+        CASE_ONE:
+            CMP AL, 01H
+            JNE CASE_FOUR
+            MOV BL, 01H
+            CALL SAVE_MN_TO_BX
+            JMP TRACKING_LOOP
+        CASE_FOUR:
+            CMP AL, 02H
+            JNE CASE_SEVEN
+            MOV BL, 04H
+            CALL SAVE_MN_TO_BX
+            JMP TRACKING_LOOP
+        CASE_SEVEN:
+            CMP AL, 04H
+            JNE CASE_STAR
+            MOV BL, 07H
+            CALL SAVE_MN_TO_BX
+            JMP TRACKING_LOOP
+        CASE_STAR:
+            JMP TRACKING_LOOP
+
+    HANDLE_SECOND_COL: ; SWITCH CASE FOR CORRESPONDING COLUMN
+        CASE_TWO:
+            CMP AL, 01H
+            JNE CASE_FIVE
+            MOV BL, 02H
+            CALL SAVE_MN_TO_BX
+            JMP TRACKING_LOOP
+        CASE_FIVE:
+            CMP AL, 02H
+            JNE CASE_EIGHT
+            MOV BL, 05H
+            CALL SAVE_MN_TO_BX
+            JMP TRACKING_LOOP
+        CASE_EIGHT:
+            CMP AL, 04H
+            JNE CASE_ZERO
+            MOV BL, 08H
+            CALL SAVE_MN_TO_BX
+            JMP TRACKING_LOOP
+        CASE_ZERO:
+            CMP AL, 08h
+            JNE TRACKING_LOOP
+            MOV BL, 00H
+            CALL SAVE_MN_TO_BX
+            JMP TRACKING_LOOP
+
+    HANDLE_THIRD_COL: ; SWITCH CASE FOR CORRESPONDING COLUMN
+        CASE_THREE:
+            CMP AL, 01H
+            JNE CASE_SIX
+            MOV BL, 03H
+            CALL SAVE_MN_TO_BX
+            JMP TRACKING_LOOP
+        CASE_SIX:
+            CMP AL, 02H
+            JNE CASE_NINE
+            MOV BL, 06H
+            CALL SAVE_MN_TO_BX
+            JMP TRACKING_LOOP
+        CASE_NINE:
+            CMP AL, 04H
+            JNE CASE_HASH
+            MOV BL, 09H
+            CALL SAVE_MN_TO_BX
+            JMP TRACKING_LOOP
+        CASE_HASH:
+            JMP TRACKING_LOOP
+    ; MOV DX, AX
+    ; CALL SHOW_NUMBER
+    JMP TRACKING_LOOP
+TRACKING_FINISH:
+    RET
 TRACK_KEYPAD ENDP
 
 
+SAVE_MN_TO_BX PROC ; GETS BL AS PARAMTER
+    CMP SI, 01H 
+    JE SAVE_N ; FINISH IF THE PRESSED NUMBER IS N (LAST/2ND NUMBER)
+SAVE_M: ; FIRST NUMBER
+    MOV DH, BL
+    JMP SAVE_FINISH
+SAVE_N: ; SECOND NUMBER
+    MOV DL, BL
+    JMP SAVE_FINISH
+SAVE_FINISH:
+    CALL SHOW_NUMBER
+    CALL DELAY
+    INC SI
+    RET
+SAVE_MN_TO_BX ENDP
+
+
 SHOW_NUMBER PROC ; GETS DX AS PARAMETER
+    PUSH AX
     MOV AL, DH
     OUT PORTA, AL
     MOV AL, DL
     OUT PORTB, AL
+    POP AX
     RET
 SHOW_NUMBER ENDP
 
@@ -58,6 +185,16 @@ SET_CNTRLREG PROC
     RET
 SET_CNTRLREG ENDP
 
+
+DELAY PROC
+   PUSH CX
+   MOV CX, 0F000H
+   LOOP1: 
+      NOP
+      LOOP LOOP1
+   POP CX
+RET
+DELAY ENDP
 
 ; DO NOT REMOVE THIS LINE:
     END MAIN
