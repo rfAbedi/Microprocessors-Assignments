@@ -21,7 +21,7 @@
     SECOND_COL EQU 01000000B
     THIRD_COL EQU 10000000B
     ; -------------------------------------------
-    D_N DB ?
+    DELAY_N DB 0AH
     ; -------------------------------------------
     M DB ?
     N DB ?
@@ -52,14 +52,11 @@ MAIN    PROC FAR
     CALL CLEAR_DIGITS 
     
     CALL TRACK_KEYPAD
-    
-    CALL DELAYL
-    CALL DELAYL
 
-    ; CALL CLEAR_DIGITS
     CALL CAL_KHPA
     CALL BCD7SEG
-    CALL SHOW_NUMBER
+
+    CALL TRACK_KEYPAD_WINKING
 
 ENDLESS:
 	JMP ENDLESS
@@ -68,6 +65,124 @@ ENDLESS:
     ; INT 21H
 MAIN    ENDP
 
+TRACK_KEYPAD_WINKING PROC
+    PUSH CX
+
+WINK:
+    MOV DL, comb
+    CALL BCD7SEG
+    CALL SHOW_NUMBER
+    XOR CX, CX
+    MOV CL, D_N
+WINK_TRACKING_LOOP:
+    DEC CX
+    WINK_CHECK_FIRST_COL:
+        MOV AL, FIRST_COL
+        OUT PORTB, AL
+        IN AL, PORTC
+        AND AL, 0FH ; CHECKS IF ANY BUTTON IN COL IS PRESSED
+        JNZ WINK_HANDLE_FIRST_COL
+
+    WINK_CHECK_SECOND_COL:
+        MOV AL, SECOND_COL
+        OUT PORTB, AL
+        IN AL, PORTC
+        AND AL, 0FH ; CHECKS IF ANY BUTTON IN COL IS PRESSED
+        JNZ WINK_HANDLE_SECOND_COL
+    
+    WINK_CHECK_THIRD_COL:
+        MOV AL, THIRD_COL
+        OUT PORTB, AL
+        IN AL, PORTC
+        AND AL, 0FH ; CHECKS IF ANY BUTTON IN COL IS PRESSED
+        JNZ WINK_HANDLE_THIRD_COL
+
+    JNE WINK_TRACKING_LOOP
+
+    WINK_HANDLE_FIRST_COL: ; SWITCH CASE FOR CORRESPONDING COLUMN
+        WINK_CASE_ONE:
+            CMP AL, 01H
+            JNE WINK_CASE_FOUR
+            MOV BL, 01H
+            CALL HANDLE_WINK
+            JNE WINK_TRACKING_LOOP
+        WINK_CASE_FOUR:
+            CMP AL, 02H
+            JNE WINK_CASE_SEVEN
+            MOV BL, 04H
+            CALL HANDLE_WINK
+            JNE WINK_TRACKING_LOOP
+        WINK_CASE_SEVEN:
+            CMP AL, 04H
+            JNE WINK_CASE_STAR
+            MOV BL, 07H
+            CALL HANDLE_WINK
+            JNE WINK_TRACKING_LOOP
+        WINK_CASE_STAR:
+            JNE WINK_TRACKING_LOOP
+
+    WINK_HANDLE_SECOND_COL: ; SWITCH CASE FOR CORRESPONDING COLUMN
+        WINK_CASE_TWO:
+            CMP AL, 01H
+            JNE WINK_CASE_FIVE
+            MOV BL, 02H
+            CALL HANDLE_WINK
+            JNE WINK_TRACKING_LOOP
+        WINK_CASE_FIVE:
+            CMP AL, 02H
+            JNE WINK_CASE_EIGHT
+            MOV BL, 05H
+            CALL HANDLE_WINK
+            JNE WINK_TRACKING_LOOP
+        WINK_CASE_EIGHT:
+            CMP AL, 04H
+            JNE WINK_CASE_ZERO
+            MOV BL, 08H
+            CALL HANDLE_WINK
+            JNE WINK_TRACKING_LOOP
+        WINK_CASE_ZERO:
+            CMP AL, 08h
+            JNE WINK_TRACKING_LOOP
+            MOV BL, 00H
+            CALL HANDLE_WINK
+            JNE WINK_TRACKING_LOOP
+
+    WINK_HANDLE_THIRD_COL: ; SWITCH CASE FOR CORRESPONDING COLUMN
+        WINK_CASE_THREE:
+            CMP AL, 01H
+            JNE WINK_CASE_SIX
+            MOV BL, 03H
+            CALL HANDLE_WINK
+            JNE WINK_TRACKING_LOOP
+        WINK_CASE_SIX:
+            CMP AL, 02H
+            JNE WINK_CASE_NINE
+            MOV BL, 06H
+            CALL HANDLE_WINK
+            JNE WINK_TRACKING_LOOP
+        WINK_CASE_NINE:
+            CMP AL, 04H
+            JNE WINK_CASE_HASH
+            MOV BL, 09H
+            CALL HANDLE_WINK
+            JNE WINK_TRACKING_LOOP
+        WINK_CASE_HASH:
+            JNE WINK_TRACKING_LOOP
+    JNE WINK_TRACKING_LOOP
+
+    CALL CLEAR_DIGITS
+    JMP WINK
+    
+   POP CX
+WINK_TRACKING_FINISH:
+    RET
+TRACK_KEYPAD_WINKING ENDP
+
+
+HANDLE_WINK PROC
+    MOV D_N, BL
+    RET
+HANDLE_WINK ENDP
 
 TRACK_KEYPAD PROC
     MOV SI, 00H ; NUMBER OF NUMBERS TAKEN FROM KEYPAD
@@ -227,13 +342,13 @@ SETUP_8253 ENDP
 
 SETUP_8259 PROC
 
-MOV AL, 00010011b		; ICW1 : Edge Triggered - 1 Master - ICW4 Kullan 
+MOV AL, 00010011B		; ICW1 : Edge Triggered - 1 Master - ICW4 Kullan 
 OUT ICW1, AL			; SET InputControlWord1
 
-MOV AL, 40h			; ICW2 : 40h
+MOV AL, 40H			; ICW2 : 40h
 OUT ICW24, AL			; SET InputControlWord2
 
-MOV AL, 03h			; AEOI(Automatic Interrupt) = 1, PM(2 Acknowledge) = 1
+MOV AL, 03H			; AEOI(Automatic Interrupt) = 1, PM(2 Acknowledge) = 1
 OUT ICW24, AL			; SET InputControlWord4
 
 RET
@@ -242,24 +357,26 @@ SETUP_8259 ENDP
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 INSERT_ISR_INTO_VECTOR_TABLE PROC
+   CLI
    XOR AX, AX
    MOV ES, AX
    MOV AL, 40H
    MOV AH, 4
    MUL AH
    MOV BX, AX
-   LEA AX, INT_AX_PER_100_MSEC
+   LEA AX, INT_100_MSEC
    MOV WORD PTR ES:[BX], AX
    MOV AX, CS
    MOV WORD PTR ES:[BX+2], AX 
+   STI
 RET
 INSERT_ISR_INTO_VECTOR_TABLE ENDP
 
 
-INT_AX_PER_100_MSEC PROC FAR
+INT_100_MSEC PROC
    INC DL
 IRET
-INT_AX_PER_100_MSEC ENDP
+INT_100_MSEC ENDP
 
 
 DELAYL PROC
@@ -273,13 +390,16 @@ DELAYL PROC
 DELAYL ENDP
 
 DELAY PROC
-   STI
+   PUSH DX
    XOR DL, DL
-ENDLESS:
-      CMP DL, D_N 
-      JNZ ENDLESS
    
+   STI
+DELAY_ENDLESS:
+   CMP DL, DELAY_N
+   JNZ DELAY_ENDLESS
+  
    CLI
+   POP DX
    RET
 DELAY ENDP
 
