@@ -1,0 +1,6 @@
+--cpu=Cortex-M4.fp.sp
+".\objects\main.o"
+--strict --scatter ".\Objects\MAIN.sct"
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list ".\Listings\MAIN.map" -o .\Objects\MAIN.axf

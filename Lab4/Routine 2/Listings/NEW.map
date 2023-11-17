@@ -1,0 +1,105 @@
+Component: Arm Compiler for Embedded 6.19 Tool: armlink [5e73cb00]
+
+==============================================================================
+
+Section Cross References
+
+    ma.o(RESET) refers to ma.o(STACK) for __initial_sp
+    ma.o(RESET) refers to ma.o(MAIN) for Reset_Handler
+    ma.o(MAIN) refers to ma.o(RESET) for DATAIN
+    ma.o(MAIN) refers to ma.o(KPSTR) for KPSTR
+
+
+==============================================================================
+
+Image Symbol Table
+
+    Local Symbols
+
+    Symbol Name                              Value     Ov Type        Size  Object(Section)
+
+    MA.s                                     0x00000000   Number         0  ma.o ABSOLUTE
+    RESET                                    0x08000000   Section       36  ma.o(RESET)
+    DATAIN                                   0x08000008   Data           4  ma.o(RESET)
+    COEFS                                    0x0800000c   Data          24  ma.o(RESET)
+    $v0                                      0x08000024   Number         0  ma.o(MAIN)
+    MAIN                                     0x08000024   Section      276  ma.o(MAIN)
+    STR_BINOMIAL_EQ                          0x0800002b   Thumb Code   156  ma.o(MAIN)
+    STR_AND_INDEX                            0x080000c7   Thumb Code    10  ma.o(MAIN)
+    BCD_TO_ASCII_AND_STR                     0x080000d1   Thumb Code    48  ma.o(MAIN)
+    DIV                                      0x08000101   Thumb Code    44  ma.o(MAIN)
+    KPSTR                                    0x20000000   Section        0  ma.o(KPSTR)
+    STACK                                    0x20000000   Section     1024  ma.o(STACK)
+    __initial_sp                             0x20000400   Data           0  ma.o(STACK)
+
+    Global Symbols
+
+    Symbol Name                              Value     Ov Type        Size  Object(Section)
+
+    BuildAttributes$$THM_ISAv4$E$P$D$K$B$S$7EM$VFPi3$EXTD16$VFPS$VFMA$PE$A:L22UL41UL21$X:L11$S22US41US21$IEEE1$~IW$USESV6$~STKCKD$USESV7$~SHL$OSPACE$EBA8$STANDARDLIB$PRES8$EABIv2 0x00000000   Number         0  anon$$obj.o ABSOLUTE
+    __Vectors                                0x08000000   Data           4  ma.o(RESET)
+    Reset_Handler                            0x08000025   Thumb Code     0  ma.o(MAIN)
+
+
+
+==============================================================================
+
+Memory Map of the image
+
+  Image Entry point : 0x08000025
+
+  Load Region LR_IROM1 (Base: 0x08000000, Size: 0x00000138, Max: 0x00080000, ABSOLUTE)
+
+    Execution Region ER_IROM1 (Exec base: 0x08000000, Load base: 0x08000000, Size: 0x00000138, Max: 0x00080000, ABSOLUTE)
+
+    Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
+
+    0x08000000   0x08000000   0x00000024   Data   RO            2    RESET               ma.o
+    0x08000024   0x08000024   0x00000114   Code   RO            4  * MAIN                ma.o
+
+
+    Execution Region RW_IRAM1 (Exec base: 0x20000000, Load base: 0x08000138, Size: 0x00000400, Max: 0x00018000, ABSOLUTE)
+
+    Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
+
+    0x20000000   0x08000138   0x00000000   Data   RW            3    KPSTR               ma.o
+    0x20000000        -       0x00000400   Zero   RW            1    STACK               ma.o
+
+
+==============================================================================
+
+Image component sizes
+
+
+      Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Object Name
+
+       276         12         36          0       1024        620   ma.o
+
+    ----------------------------------------------------------------------
+       276         12         36          0       1024        620   Object Totals
+         0          0          0          0          0          0   (incl. Generated)
+         0          0          0          0          0          0   (incl. Padding)
+
+    ----------------------------------------------------------------------
+         0          0          0          0          0          0   Library Totals
+         0          0          0          0          0          0   (incl. Padding)
+
+    ----------------------------------------------------------------------
+
+==============================================================================
+
+
+      Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
+
+       276         12         36          0       1024        620   Grand Totals
+       276         12         36          0       1024        620   ELF Image Totals
+       276         12         36          0          0          0   ROM Totals
+
+==============================================================================
+
+    Total RO  Size (Code + RO Data)                  312 (   0.30kB)
+    Total RW  Size (RW Data + ZI Data)              1024 (   1.00kB)
+    Total ROM Size (Code + RO Data + RW Data)        312 (   0.30kB)
+
+==============================================================================
+

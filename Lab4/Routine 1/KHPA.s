@@ -1,42 +1,35 @@
-Stack_Size      EQU     0x00000400
+Stack_Size		EQU		0x00000400
 
-                AREA    STACK, NOINIT, READWRITE, ALIGN=3
-Stack_Mem       SPACE   Stack_Size
+				AREA	STACK, NOINIT, READWRITE, ALIGN=3
+Stack_Mem		SPACE	Stack_Size
 __initial_sp
 
-
-; <h> Heap Configuration
-;   <o>  Heap Size (in Bytes) <0x0-0xFFFFFFFF:8>
-; </h>
-
-Heap_Size       EQU     0x00000200
-
-                AREA    HEAP, NOINIT, READWRITE, ALIGN=3
-__heap_base
-Heap_Mem        SPACE   Heap_Size
-__heap_limit
-
-                PRESERVE8
-                THUMB
-
+				PRESERVE8
+				THUMB
 
 ; Vector Table Mapped to Address 0 at Reset
-                AREA    RESET, DATA, READONLY
-                EXPORT  __Vectors
-                EXPORT  __Vectors_End
-                EXPORT  __Vectors_Size
+				AREA	RESET, DATA, READONLY
+				EXPORT	__Vectors
 
-__Vectors       DCD     __initial_sp               ; Top of Stack
-                DCD     Reset_Handler              ; Reset Handler
-__Vectors_End
+__Vectors		DCD		__initial_sp		; Top of Stack
+				DCD		Reset_Handler		; Reset Handler
 
-__Vectors_Size  EQU  __Vectors_End - __Vectors
+				ALIGN
+
+
+DATAIN DCB 9
+
+	AREA MYDATA, DATA, READWRITE
+COEFS SPACE 36
 
                 AREA    MAIN, CODE, READONLY
-    ENTRY
-    EXPORT Reset_Handler
+    			ENTRY
+    			EXPORT Reset_Handler
 
+Reset_Handler
+; *** MAIN STARTS HERE ***
 
+; *** REGISTER NAMING ***
 ROW RN R12
 COL RN R11
 FACT_PAR RN R10
@@ -45,16 +38,16 @@ ROW_MINUS_FACT RN R8
 COL_MINUS_FACT RN R7
 DIFF_FACT RN R6
 PASCAL_ANS RN R5
+; ************************
 
-Reset_Handler
-; *** MAIN STARTS HERE ***
 	LDR R0, =COEFS ; ADDRESS OF COEFS
 	BL KHPA
 ENDLESS B ENDLESS ; END OF MAIN
 ; ************************
 
 ; *** KHPA ROUTINE / GETS R0 ***
-KHPA
+KHPA PROC
+	PUSH {LR}
 	PUSH {R0}
 	LDR R0, =DATAIN
 	LDR ROW, [R0]
@@ -74,11 +67,13 @@ NEXT_KHPA
 	ADD COL, COL, #1
 	B NEXT_KHPA
 KHPA_END
+	POP {LR}
 	BX LR ; SAVES DATA IN COEFS 
+	ENDP
 ; ********************
 
 ; *** PASCAL ROUTINE ***
-PASCAL
+PASCAL PROC
 	PUSH {LR}
 	MOV R0, ROW
 	MOV R1, COL
@@ -108,11 +103,12 @@ PASCAL
 	POP {R0, R1}
 	POP {LR}
 	BX LR ; RETURN PASCAL_ANS
+	ENDP
 ; **********************
 
 
 ; *** FACT ROUTINE ***
-FACT
+FACT PROC
 	MOV FACT_ANS, #1
 FACT_LOOP
 	CMP FACT_PAR, #1
@@ -122,10 +118,11 @@ FACT_LOOP
 	B FACT_LOOP
 FACT_END
 	BX LR ; RETURN
+	ENDP
 ; ********************
 
 ; *** DIV ROUTINE R0/R1***
-DIV
+DIV PROC
 	; save R2 and R3 on the stack
 	PUSH {R2, R3}
 	; check if the divisor is zero
@@ -162,13 +159,8 @@ DIV_END
 	POP {R2, R3}
 	; return from the subroutine
 	BX LR ; returns R0 as Quotient & R1 as Remainder 
+	ENDP
 ; ********************
-
-
-DATAIN DCB 9
-
-	AREA MYDATA, DATA, READWRITE
-COEFS SPACE 36
 
 
 ; *** THE END ***
