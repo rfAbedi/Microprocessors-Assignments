@@ -17,7 +17,7 @@ __Vectors		DCD		__initial_sp		; Top of Stack
 				ALIGN
 
 
-DATAIN DCB 9
+DATAIN DCB 4
 
 	AREA MYDATA, DATA, READWRITE
 COEFS SPACE 9
