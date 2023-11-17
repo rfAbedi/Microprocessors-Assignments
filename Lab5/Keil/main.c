@@ -1,8 +1,8 @@
-#include <stdio.h>
+#include <stm32f4xx.h>
 
+#define mask(x) (1UL << (x))
 
 int COEFS[10];
-
 
 int pascal(int row, int col) {
     if(col == 1 || row == col)
@@ -17,8 +17,14 @@ void KHPA(int n) {
     }
 }
 
-void KHTEXT(int n, int m) {
+int KHTEXT(int n, int m) {
     KHPA(n);
     return COEFS[m];
 }
 
+
+int main(void) {
+	
+	
+	while(1);
+}
