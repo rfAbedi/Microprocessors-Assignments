@@ -1,4 +1,4 @@
-./objects/main.o: Main.c GPIO.h \
+./objects/gpio.o: GPIO.c GPIO.h \
   C:\Users\ROG\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.16.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include\stm32f401xe.h \
   C:\Users\ROG\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\core_cm4.h \
   C:\Program\ Files\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdint.h \
