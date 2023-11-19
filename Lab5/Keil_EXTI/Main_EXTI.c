@@ -14,13 +14,17 @@ int KHEXT(int n, int m);
 
 unsigned char bin_to_bcd(int bin);
 
-void EXTI0_IRQHandler(void);
+void EXTI4_IRQHandler(void);
 
 int main(void) {
 	// Init SevenSegment
 	GPIO_EnableClock(A);
-	for (char i = 0; i < 14; i++) {
+	GPIO_EnableClock(C);
+	for (char i = 0; i < 7; i++) {
 		GPIO_Init(A, i, OUTPUT);
+	}
+	for (char i = 0; i < 7; i++) {
+		GPIO_Init(C, i, OUTPUT);
 	}
 
 	// Init DipSwitch
@@ -28,18 +32,17 @@ int main(void) {
 	for (char i = 0; i < 4; i++) {
 		GPIO_Init(B, i, INPUT);
 	}
-	
+
 	// Init UserButton
-	GPIO_EnableClock(C);
-	GPIO_Init(C, 0, INPUT);
+	GPIO_Init(B, 4, INPUT);
 	
 	// Port C EXTI
 	EXTI_EnableClock();
-	EXIT_INIT(C, EXTI0, RISSING);
+	EXIT_INIT(B, EXTI4, RISSING);
 		
 	//Enable Interrupt
 	__enable_irq();
-	NVIC_ConfigIRQ(EXTI0_IRQn);
+	NVIC_ConfigIRQ(EXTI4_IRQn);
 
 
 	// Clear SevenSeg Display
@@ -47,7 +50,7 @@ int main(void) {
 		GPIO_WritePin(A, i, (sevenSegHex[0] >> i) & 0x01);
 	}
 	for (char i = 0; i < 7; i++) {
-		GPIO_WritePin(A, i+7, (sevenSegHex[0] >> i) & 0x01);
+		GPIO_WritePin(C, i, (sevenSegHex[0] >> i) & 0x01);
 	}
 
 	while(1);
@@ -83,11 +86,11 @@ unsigned char bin_to_bcd(int bin) {
 	return bcd;
 }
 
-void EXTI0_IRQHandler(void) {
-	EXTI->PR |= EXTI_PR_PR0;
-	NVIC_ClearPendingIRQ(EXTI0_IRQn);
+void EXTI4_IRQHandler(void) {
+	EXTI->PR |= EXTI_PR_PR4;
+	NVIC_ClearPendingIRQ(EXTI4_IRQn);
 	
-	if ((GPIO_ReadPin(C, 0) == 0x01) && button_counter == 0) {
+	if ((GPIO_ReadPin(B, 4) == 0x01) && button_counter == 0) {
 		N = 0;
 		for(char i = 0; i < 4; i++) {
 			N |= (GPIO_ReadPin(B, i) << i);
@@ -99,18 +102,18 @@ void EXTI0_IRQHandler(void) {
 		}
 
 		button_counter++;
-	} else if ((GPIO_ReadPin(C, 0) == 0x01) && button_counter == 1) {
+	} else if ((GPIO_ReadPin(B, 4) == 0x01) && button_counter == 1) {
 		M = 0;
 		for(char i = 0; i < 4; i++) {
 			M |= (GPIO_ReadPin(B, i) << i);
 		}
 
 		for (char i = 0; i < 7; i++) {
-			GPIO_WritePin(A, i+7, (sevenSegHex[bin_to_bcd(M)] >> i) & 0x01);
+			GPIO_WritePin(C, i, (sevenSegHex[bin_to_bcd(M)] >> i) & 0x01);
 		}
 
 		button_counter++;
-	} else if ((GPIO_ReadPin(C, 0) == 0x01) && button_counter == 2) {
+	} else if ((GPIO_ReadPin(B, 4) == 0x01) && button_counter == 2) {
 		char bcd = bin_to_bcd(KHEXT(N, M));
 
 		int digit_1 = bcd & 0x0F;
@@ -120,7 +123,7 @@ void EXTI0_IRQHandler(void) {
 			GPIO_WritePin(A, i, (sevenSegHex[digit_1] >> i) & 0x01);
 		}
 		for (char i = 0; i < 7; i++) {
-			GPIO_WritePin(A, i+7, (sevenSegHex[digit_2] >> i) & 0x01);
+			GPIO_WritePin(C, i, (sevenSegHex[digit_2] >> i) & 0x01);
 		}
 
 		button_counter = 0;

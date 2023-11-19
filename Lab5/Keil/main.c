@@ -17,8 +17,12 @@ unsigned char bin_to_bcd(int bin);
 int main(void) {
 	// Init SevenSegment
 	GPIO_EnableClock(A);
-	for (char i = 0; i < 14; i++) {
+	GPIO_EnableClock(C);
+	for (char i = 0; i < 7; i++) {
 		GPIO_Init(A, i, OUTPUT);
+	}
+	for (char i = 0; i < 7; i++) {
+		GPIO_Init(C, i, OUTPUT);
 	}
 
 	// Init DipSwitch
@@ -26,22 +30,17 @@ int main(void) {
 	for (char i = 0; i < 4; i++) {
 		GPIO_Init(B, i, INPUT);
 	}
-	
-	// Init UserButton
-	GPIO_EnableClock(C);
-	GPIO_Init(C, 0, INPUT);
 
+	// Init UserButton
+	GPIO_Init(C, 13, INPUT);
+	
 	// Clear SevenSeg Display
 	for (char i = 0; i < 7; i++) {
 		GPIO_WritePin(A, i, (sevenSegHex[0] >> i) & 0x01);
 	}
 	for (char i = 0; i < 7; i++) {
-		GPIO_WritePin(A, i+7, (sevenSegHex[0] >> i) & 0x01);
+		GPIO_WritePin(C, i, (sevenSegHex[0] >> i) & 0x01);
 	}
-
-	// Init UserButton
-	GPIO_EnableClock(C);
-	GPIO_Init(C, 13, INPUT);
 
 	while(1) {
 		if ((GPIO_ReadPin(C, 13) == 0x01) && button_counter == 0) {
@@ -63,9 +62,10 @@ int main(void) {
 			}
 
 			for (char i = 0; i < 7; i++) {
-				GPIO_WritePin(A, i+7, (sevenSegHex[bin_to_bcd(M)] >> i) & 0x01);
+				GPIO_WritePin(C, i, (sevenSegHex[bin_to_bcd(M)] >> i) & 0x01);
 			}
-
+			GPIO_WritePin(C, 0, 1);
+			
 			button_counter++;
 		} else if ((GPIO_ReadPin(C, 13) == 0x01) && button_counter == 2) {
 			char bcd = bin_to_bcd(KHEXT(N, M));
@@ -77,13 +77,13 @@ int main(void) {
 				GPIO_WritePin(A, i, (sevenSegHex[digit_1] >> i) & 0x01);
 			}
 			for (char i = 0; i < 7; i++) {
-				GPIO_WritePin(A, i+7, (sevenSegHex[digit_2] >> i) & 0x01);
+				GPIO_WritePin(C, i, (sevenSegHex[digit_2] >> i) & 0x01);
 			}
 
 			button_counter = 0;
 		}
 		//delay
-		for (int j = 0; j < 10000; j++) {}
+		for (int j = 0; j < 1000000; j++) {}
 	}
 }
 

@@ -27,7 +27,6 @@ Project File Date:  11/18/2023
 <h2>Output:</h2>
 *** Using Compiler 'V6.19', folder: 'C:\Program Files\Keil_v5\ARM\ARMCLANG\Bin'
 Rebuild target 'Target 1'
-assembling startup_stm32f401xe.s...
 RTE/Device/STM32F401RETx/system_stm32f4xx.c(49): warning: In file included from...
 C:/Users/ROG/AppData/Local/Arm/Packs/Keil/STM32F4xx_DFP/2.16.0/Drivers/CMSIS/Device/ST/STM32F4xx/Include\stm32f4xx.h(11): warning: invalid UTF-8 in comment [-Winvalid-utf8]
   *              - To use or not the peripheral<92>s drivers in application code(i.e. 
@@ -42,9 +41,10 @@ GPIO.c(24): warning: implicit conversion changes signedness: 'int' to 'unsigned 
                                                 ~~ ^~~~~~~~~~~~~~~~~~~~~
 1 warning generated.
 compiling GPIO.c...
+assembling startup_stm32f401xe.s...
 compiling Main.c...
 linking...
-Program Size: Code=1866 RO-data=446 RW-data=24 ZI-data=1688  
+Program Size: Code=1894 RO-data=446 RW-data=24 ZI-data=1688  
 FromELF: creating hex file...
 ".\Objects\Main.axf" - 0 Error(s), 3 Warning(s).
 
@@ -73,11 +73,11 @@ Package Vendor: Keil
 
    * Component: Keil::Device:Startup:2.6.3
       Source file:   MDK/Device/Source/ARM/STM32F401xx_OPT.s
-      Source file:   MDK/Device/Source/ARM/STM32F4xx_OTP.s
       Include file:  Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h
       Source file:   Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f401xe.s
+      Source file:   MDK/Device/Source/ARM/STM32F4xx_OTP.s
       Source file:   Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/system_stm32f4xx.c
-Build Time Elapsed:  00:00:00
+Build Time Elapsed:  00:00:01
 </pre>
 </body>
 </html>
