@@ -14,42 +14,38 @@ int KHEXT(int n, int m);
 
 unsigned char bin_to_bcd(int bin);
 
-void EXTI4_IRQHandler(void);
+void EXTI15_10_IRQHandler(void);
 
 int main(void) {
 	// Init SevenSegment
 	GPIO_EnableClock(A);
 	GPIO_EnableClock(C);
 	for (char i = 0; i < 7; i++) {
-		GPIO_Init(A, i, OUTPUT);
-	}
-	for (char i = 0; i < 7; i++) {
-		GPIO_Init(C, i, OUTPUT);
+		GPIO_Init(A, i, OUTPUT, NO_PULL_UP_DOWN);
+		GPIO_Init(C, i, OUTPUT, NO_PULL_UP_DOWN);
 	}
 
 	// Init DipSwitch
 	GPIO_EnableClock(B);
 	for (char i = 0; i < 4; i++) {
-		GPIO_Init(B, i, INPUT);
+		GPIO_Init(B, i, INPUT, NO_PULL_UP_DOWN);
 	}
 
 	// Init UserButton
-	GPIO_Init(B, 4, INPUT);
-	
+	GPIO_Init(C, 13, INPUT, PULL_UP);
+
 	// Port C EXTI
 	EXTI_EnableClock();
-	EXIT_INIT(B, EXTI4, RISSING);
+	EXIT_INIT(C, EXTI13, FALLING_RISSING);
 		
 	//Enable Interrupt
 	__enable_irq();
-	NVIC_ConfigIRQ(EXTI4_IRQn);
+	NVIC_ConfigIRQ(EXTI15_10_IRQn, 0);
 
 
 	// Clear SevenSeg Display
 	for (char i = 0; i < 7; i++) {
 		GPIO_WritePin(A, i, (sevenSegHex[0] >> i) & 0x01);
-	}
-	for (char i = 0; i < 7; i++) {
 		GPIO_WritePin(C, i, (sevenSegHex[0] >> i) & 0x01);
 	}
 
@@ -86,46 +82,43 @@ unsigned char bin_to_bcd(int bin) {
 	return bcd;
 }
 
-void EXTI4_IRQHandler(void) {
-	EXTI->PR |= EXTI_PR_PR4;
-	NVIC_ClearPendingIRQ(EXTI4_IRQn);
+void EXTI15_10_IRQHandler(void) {
+	EXTI->PR |= EXTI_PR_PR13;
+	NVIC_ClearPendingIRQ(EXTI15_10_IRQn);
 	
-	if ((GPIO_ReadPin(B, 4) == 0x01) && button_counter == 0) {
-		N = 0;
-		for(char i = 0; i < 4; i++) {
-			N |= (GPIO_ReadPin(B, i) << i);
+	if ((GPIO_ReadPin(C, 13) == 0) && button_counter == 0) {
+			N = 0;
+			for(char i = 0; i < 4; i++) {
+				N |= (GPIO_ReadPin(B, i) << i);
+			}
+
+			for (char i = 0; i < 7; i++) {
+				GPIO_WritePin(A, i, (sevenSegHex[bin_to_bcd(N)] >> i) & 0x01);
+			}
+			
+			button_counter++;
+		} else if ((GPIO_ReadPin(C, 13) == 1) && button_counter == 1) {
+			M = 0;
+			for(char i = 0; i < 4; i++) {
+				M |= (GPIO_ReadPin(B, i) << i);
+			}
+
+			for (char i = 0; i < 7; i++) {
+				GPIO_WritePin(C, i, (sevenSegHex[bin_to_bcd(M)] >> i) & 0x01);
+			}
+			
+			button_counter++;
+		} else if ((GPIO_ReadPin(C, 13) == 1) && button_counter == 2) {
+			char bcd = bin_to_bcd(KHEXT(N, M));
+
+			int digit_1 = bcd & 0x0F;
+			int digit_2 = (bcd >> 4) & 0x0F;
+
+			for (char i = 0; i < 7; i++) {
+				GPIO_WritePin(A, i, (sevenSegHex[digit_1] >> i) & 0x01);
+				GPIO_WritePin(C, i, (sevenSegHex[digit_2] >> i) & 0x01);
+			}
+
+			button_counter = 0;
 		}
-
-
-		for (char i = 0; i < 7; i++) {
-			GPIO_WritePin(A, i, (sevenSegHex[bin_to_bcd(N)] >> i) & 0x01);
-		}
-
-		button_counter++;
-	} else if ((GPIO_ReadPin(B, 4) == 0x01) && button_counter == 1) {
-		M = 0;
-		for(char i = 0; i < 4; i++) {
-			M |= (GPIO_ReadPin(B, i) << i);
-		}
-
-		for (char i = 0; i < 7; i++) {
-			GPIO_WritePin(C, i, (sevenSegHex[bin_to_bcd(M)] >> i) & 0x01);
-		}
-
-		button_counter++;
-	} else if ((GPIO_ReadPin(B, 4) == 0x01) && button_counter == 2) {
-		char bcd = bin_to_bcd(KHEXT(N, M));
-
-		int digit_1 = bcd & 0x0F;
-		int digit_2 = (bcd >> 4) & 0x0F;
-
-		for (char i = 0; i < 7; i++) {
-			GPIO_WritePin(A, i, (sevenSegHex[digit_1] >> i) & 0x01);
-		}
-		for (char i = 0; i < 7; i++) {
-			GPIO_WritePin(C, i, (sevenSegHex[digit_2] >> i) & 0x01);
-		}
-
-		button_counter = 0;
-	}
 }

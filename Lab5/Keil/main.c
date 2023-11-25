@@ -43,7 +43,7 @@ int main(void) {
 	}
 
 	while(1) {
-		if ((GPIO_ReadPin(C, 13) == 0x01) && button_counter == 0) {
+		if ((GPIO_ReadPin(C, 13) == 0) && button_counter == 0) {
 			N = 0;
 			for(char i = 0; i < 4; i++) {
 				N |= (GPIO_ReadPin(B, i) << i);
@@ -55,7 +55,7 @@ int main(void) {
 			}
 
 			button_counter++;
-		} else if ((GPIO_ReadPin(C, 13) == 0x01) && button_counter == 1) {
+		} else if ((GPIO_ReadPin(C, 13) == 1) && button_counter == 1) {
 			M = 0;
 			for(char i = 0; i < 4; i++) {
 				M |= (GPIO_ReadPin(B, i) << i);
@@ -67,7 +67,7 @@ int main(void) {
 			GPIO_WritePin(C, 0, 1);
 			
 			button_counter++;
-		} else if ((GPIO_ReadPin(C, 13) == 0x01) && button_counter == 2) {
+		} else if ((GPIO_ReadPin(C, 13) == 0) && button_counter == 2) {
 			char bcd = bin_to_bcd(KHEXT(N, M));
 
 			int digit_1 = bcd & 0x0F;

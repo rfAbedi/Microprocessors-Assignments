@@ -20,19 +20,18 @@ Section Cross References
     main_exti.o(.text.KHEXT) refers to main_exti.o(.bss.COEFS) for COEFS
     main_exti.o(.ARM.exidx.text.KHEXT) refers to main_exti.o(.text.KHEXT) for [Anonymous Symbol]
     main_exti.o(.ARM.exidx.text.bin_to_bcd) refers to main_exti.o(.text.bin_to_bcd) for [Anonymous Symbol]
-    main_exti.o(.text.EXTI4_IRQHandler) refers to main_exti.o(.text.__NVIC_ClearPendingIRQ) for __NVIC_ClearPendingIRQ
-    main_exti.o(.text.EXTI4_IRQHandler) refers to gpio.o(.text.GPIO_ReadPin) for GPIO_ReadPin
-    main_exti.o(.text.EXTI4_IRQHandler) refers to main_exti.o(.bss.button_counter) for button_counter
-    main_exti.o(.text.EXTI4_IRQHandler) refers to main_exti.o(.bss.N) for N
-    main_exti.o(.text.EXTI4_IRQHandler) refers to main_exti.o(.text.bin_to_bcd) for bin_to_bcd
-    main_exti.o(.text.EXTI4_IRQHandler) refers to main_exti.o(.rodata.sevenSegHex) for sevenSegHex
-    main_exti.o(.text.EXTI4_IRQHandler) refers to gpio.o(.text.GPIO_WritePin) for GPIO_WritePin
-    main_exti.o(.text.EXTI4_IRQHandler) refers to main_exti.o(.bss.M) for M
-    main_exti.o(.text.EXTI4_IRQHandler) refers to main_exti.o(.text.KHEXT) for KHEXT
-    main_exti.o(.ARM.exidx.text.EXTI4_IRQHandler) refers to main_exti.o(.text.EXTI4_IRQHandler) for [Anonymous Symbol]
+    main_exti.o(.text.EXTI15_10_IRQHandler) refers to main_exti.o(.text.__NVIC_ClearPendingIRQ) for __NVIC_ClearPendingIRQ
+    main_exti.o(.text.EXTI15_10_IRQHandler) refers to gpio.o(.text.GPIO_ReadPin) for GPIO_ReadPin
+    main_exti.o(.text.EXTI15_10_IRQHandler) refers to main_exti.o(.bss.button_counter) for button_counter
+    main_exti.o(.text.EXTI15_10_IRQHandler) refers to main_exti.o(.bss.N) for N
+    main_exti.o(.text.EXTI15_10_IRQHandler) refers to main_exti.o(.text.bin_to_bcd) for bin_to_bcd
+    main_exti.o(.text.EXTI15_10_IRQHandler) refers to main_exti.o(.rodata.sevenSegHex) for sevenSegHex
+    main_exti.o(.text.EXTI15_10_IRQHandler) refers to gpio.o(.text.GPIO_WritePin) for GPIO_WritePin
+    main_exti.o(.text.EXTI15_10_IRQHandler) refers to main_exti.o(.bss.M) for M
+    main_exti.o(.text.EXTI15_10_IRQHandler) refers to main_exti.o(.text.KHEXT) for KHEXT
+    main_exti.o(.ARM.exidx.text.EXTI15_10_IRQHandler) refers to main_exti.o(.text.EXTI15_10_IRQHandler) for [Anonymous Symbol]
     main_exti.o(.ARM.exidx.text.__NVIC_ClearPendingIRQ) refers to main_exti.o(.text.__NVIC_ClearPendingIRQ) for [Anonymous Symbol]
     exti.o(.ARM.exidx.text.EXTI_EnableClock) refers to exti.o(.text.EXTI_EnableClock) for [Anonymous Symbol]
-    exti.o(.text.EXIT_INIT) refers to exti.o(.data.SYSCFG_EXTICR_EXTI) for SYSCFG_EXTICR_EXTI
     exti.o(.ARM.exidx.text.EXIT_INIT) refers to exti.o(.text.EXIT_INIT) for [Anonymous Symbol]
     exti.o(.text.NVIC_ConfigIRQ) refers to exti.o(.text.__NVIC_SetPriority) for __NVIC_SetPriority
     exti.o(.text.NVIC_ConfigIRQ) refers to exti.o(.text.__NVIC_ClearPendingIRQ) for __NVIC_ClearPendingIRQ
@@ -54,7 +53,7 @@ Section Cross References
     startup_stm32f401xe.o(RESET) refers (Special) to heapauxi.o(.text) for __use_two_region_memory
     startup_stm32f401xe.o(RESET) refers to startup_stm32f401xe.o(STACK) for __initial_sp
     startup_stm32f401xe.o(RESET) refers to startup_stm32f401xe.o(.text) for Reset_Handler
-    startup_stm32f401xe.o(RESET) refers to main_exti.o(.text.EXTI4_IRQHandler) for EXTI4_IRQHandler
+    startup_stm32f401xe.o(RESET) refers to main_exti.o(.text.EXTI15_10_IRQHandler) for EXTI15_10_IRQHandler
     startup_stm32f401xe.o(.text) refers (Special) to heapauxi.o(.text) for __use_two_region_memory
     startup_stm32f401xe.o(.text) refers to system_stm32f4xx.o(.text.SystemInit) for SystemInit
     startup_stm32f401xe.o(.text) refers to __main.o(!!!main) for __main
@@ -182,7 +181,7 @@ Removing Unused input sections from the image.
     Removing main_exti.o(.ARM.exidx.text.KHPA), (8 bytes).
     Removing main_exti.o(.ARM.exidx.text.KHEXT), (8 bytes).
     Removing main_exti.o(.ARM.exidx.text.bin_to_bcd), (8 bytes).
-    Removing main_exti.o(.ARM.exidx.text.EXTI4_IRQHandler), (8 bytes).
+    Removing main_exti.o(.ARM.exidx.text.EXTI15_10_IRQHandler), (8 bytes).
     Removing main_exti.o(.ARM.exidx.text.__NVIC_ClearPendingIRQ), (8 bytes).
     Removing main_exti.o(.ARM.use_no_argv), (4 bytes).
     Removing exti.o(.text), (0 bytes).
@@ -329,51 +328,49 @@ Image Symbol Table
     .text                                    0x080002ec   Section        2  use_no_semi.o(.text)
     .text                                    0x080002ee   Section        0  indicate_semi.o(.text)
     [Anonymous Symbol]                       0x080002f0   Section        0  exti.o(.text.EXIT_INIT)
-    [Anonymous Symbol]                       0x08000388   Section        0  main_exti.o(.text.EXTI4_IRQHandler)
-    [Anonymous Symbol]                       0x08000614   Section        0  exti.o(.text.EXTI_EnableClock)
-    [Anonymous Symbol]                       0x08000628   Section        0  gpio.o(.text.GPIO_EnableClock)
-    [Anonymous Symbol]                       0x0800064c   Section        0  gpio.o(.text.GPIO_Init)
-    [Anonymous Symbol]                       0x080006b4   Section        0  gpio.o(.text.GPIO_ReadPin)
-    [Anonymous Symbol]                       0x080006e4   Section        0  gpio.o(.text.GPIO_WritePin)
-    [Anonymous Symbol]                       0x0800073c   Section        0  main_exti.o(.text.KHEXT)
-    [Anonymous Symbol]                       0x0800075c   Section        0  main_exti.o(.text.KHPA)
-    [Anonymous Symbol]                       0x08000798   Section        0  exti.o(.text.NVIC_ConfigIRQ)
-    [Anonymous Symbol]                       0x080007bc   Section        0  system_stm32f4xx.o(.text.SystemInit)
-    __NVIC_ClearPendingIRQ                   0x080007d1   Thumb Code    48  main_exti.o(.text.__NVIC_ClearPendingIRQ)
-    [Anonymous Symbol]                       0x080007d0   Section        0  main_exti.o(.text.__NVIC_ClearPendingIRQ)
-    __NVIC_ClearPendingIRQ                   0x08000801   Thumb Code    48  exti.o(.text.__NVIC_ClearPendingIRQ)
-    [Anonymous Symbol]                       0x08000800   Section        0  exti.o(.text.__NVIC_ClearPendingIRQ)
-    __NVIC_EnableIRQ                         0x08000831   Thumb Code    48  exti.o(.text.__NVIC_EnableIRQ)
-    [Anonymous Symbol]                       0x08000830   Section        0  exti.o(.text.__NVIC_EnableIRQ)
-    __NVIC_SetPriority                       0x08000861   Thumb Code    66  exti.o(.text.__NVIC_SetPriority)
-    [Anonymous Symbol]                       0x08000860   Section        0  exti.o(.text.__NVIC_SetPriority)
-    [Anonymous Symbol]                       0x080008a4   Section        0  main_exti.o(.text.bin_to_bcd)
-    [Anonymous Symbol]                       0x0800090c   Section        0  main_exti.o(.text.main)
-    [Anonymous Symbol]                       0x08000a48   Section        0  main_exti.o(.text.pascal)
-    $v0                                      0x08000a90   Number         0  fpinit.o(x$fpl$fpinit)
-    x$fpl$fpinit                             0x08000a90   Section       26  fpinit.o(x$fpl$fpinit)
-    sevenSegHex                              0x08000aaa   Data          10  main_exti.o(.rodata.sevenSegHex)
-    [Anonymous Symbol]                       0x08000aaa   Section        0  main_exti.o(.rodata.sevenSegHex)
+    [Anonymous Symbol]                       0x08000390   Section        0  main_exti.o(.text.EXTI15_10_IRQHandler)
+    [Anonymous Symbol]                       0x080005f8   Section        0  exti.o(.text.EXTI_EnableClock)
+    [Anonymous Symbol]                       0x0800060c   Section        0  gpio.o(.text.GPIO_EnableClock)
+    [Anonymous Symbol]                       0x08000630   Section        0  gpio.o(.text.GPIO_Init)
+    [Anonymous Symbol]                       0x08000720   Section        0  gpio.o(.text.GPIO_ReadPin)
+    [Anonymous Symbol]                       0x08000750   Section        0  gpio.o(.text.GPIO_WritePin)
+    [Anonymous Symbol]                       0x080007a8   Section        0  main_exti.o(.text.KHEXT)
+    [Anonymous Symbol]                       0x080007c8   Section        0  main_exti.o(.text.KHPA)
+    [Anonymous Symbol]                       0x08000804   Section        0  exti.o(.text.NVIC_ConfigIRQ)
+    [Anonymous Symbol]                       0x0800082c   Section        0  system_stm32f4xx.o(.text.SystemInit)
+    __NVIC_ClearPendingIRQ                   0x08000841   Thumb Code    48  main_exti.o(.text.__NVIC_ClearPendingIRQ)
+    [Anonymous Symbol]                       0x08000840   Section        0  main_exti.o(.text.__NVIC_ClearPendingIRQ)
+    __NVIC_ClearPendingIRQ                   0x08000871   Thumb Code    48  exti.o(.text.__NVIC_ClearPendingIRQ)
+    [Anonymous Symbol]                       0x08000870   Section        0  exti.o(.text.__NVIC_ClearPendingIRQ)
+    __NVIC_EnableIRQ                         0x080008a1   Thumb Code    48  exti.o(.text.__NVIC_EnableIRQ)
+    [Anonymous Symbol]                       0x080008a0   Section        0  exti.o(.text.__NVIC_EnableIRQ)
+    __NVIC_SetPriority                       0x080008d1   Thumb Code    66  exti.o(.text.__NVIC_SetPriority)
+    [Anonymous Symbol]                       0x080008d0   Section        0  exti.o(.text.__NVIC_SetPriority)
+    [Anonymous Symbol]                       0x08000914   Section        0  main_exti.o(.text.bin_to_bcd)
+    [Anonymous Symbol]                       0x0800097c   Section        0  main_exti.o(.text.main)
+    [Anonymous Symbol]                       0x08000a84   Section        0  main_exti.o(.text.pascal)
+    $v0                                      0x08000acc   Number         0  fpinit.o(x$fpl$fpinit)
+    x$fpl$fpinit                             0x08000acc   Section       26  fpinit.o(x$fpl$fpinit)
+    sevenSegHex                              0x08000ae6   Data          10  main_exti.o(.rodata.sevenSegHex)
+    [Anonymous Symbol]                       0x08000ae6   Section        0  main_exti.o(.rodata.sevenSegHex)
     GPIO_PORTS                               0x20000000   Data          12  gpio.o(.data.GPIO_PORTS)
     [Anonymous Symbol]                       0x20000000   Section        0  gpio.o(.data.GPIO_PORTS)
     RCC_AHB1ENR_GPIOEN                       0x2000000c   Data          12  gpio.o(.data.RCC_AHB1ENR_GPIOEN)
     [Anonymous Symbol]                       0x2000000c   Section        0  gpio.o(.data.RCC_AHB1ENR_GPIOEN)
-    SYSCFG_EXTICR_EXTI                       0x20000018   Data         192  exti.o(.data.SYSCFG_EXTICR_EXTI)
-    [Anonymous Symbol]                       0x20000018   Section        0  exti.o(.data.SYSCFG_EXTICR_EXTI)
-    .bss                                     0x200000d8   Section       96  libspace.o(.bss)
-    COEFS                                    0x20000138   Data          40  main_exti.o(.bss.COEFS)
-    [Anonymous Symbol]                       0x20000138   Section        0  main_exti.o(.bss.COEFS)
-    M                                        0x20000160   Data           4  main_exti.o(.bss.M)
-    [Anonymous Symbol]                       0x20000160   Section        0  main_exti.o(.bss.M)
-    N                                        0x20000164   Data           4  main_exti.o(.bss.N)
-    [Anonymous Symbol]                       0x20000164   Section        0  main_exti.o(.bss.N)
-    button_counter                           0x20000168   Data           4  main_exti.o(.bss.button_counter)
-    [Anonymous Symbol]                       0x20000168   Section        0  main_exti.o(.bss.button_counter)
-    Heap_Mem                                 0x20000170   Data         512  startup_stm32f401xe.o(HEAP)
-    HEAP                                     0x20000170   Section      512  startup_stm32f401xe.o(HEAP)
-    Stack_Mem                                0x20000370   Data        1024  startup_stm32f401xe.o(STACK)
-    STACK                                    0x20000370   Section     1024  startup_stm32f401xe.o(STACK)
-    __initial_sp                             0x20000770   Data           0  startup_stm32f401xe.o(STACK)
+    .bss                                     0x20000018   Section       96  libspace.o(.bss)
+    COEFS                                    0x20000078   Data          40  main_exti.o(.bss.COEFS)
+    [Anonymous Symbol]                       0x20000078   Section        0  main_exti.o(.bss.COEFS)
+    M                                        0x200000a0   Data           4  main_exti.o(.bss.M)
+    [Anonymous Symbol]                       0x200000a0   Section        0  main_exti.o(.bss.M)
+    N                                        0x200000a4   Data           4  main_exti.o(.bss.N)
+    [Anonymous Symbol]                       0x200000a4   Section        0  main_exti.o(.bss.N)
+    button_counter                           0x200000a8   Data           4  main_exti.o(.bss.button_counter)
+    [Anonymous Symbol]                       0x200000a8   Section        0  main_exti.o(.bss.button_counter)
+    Heap_Mem                                 0x200000b0   Data         512  startup_stm32f401xe.o(HEAP)
+    HEAP                                     0x200000b0   Section      512  startup_stm32f401xe.o(HEAP)
+    Stack_Mem                                0x200002b0   Data        1024  startup_stm32f401xe.o(STACK)
+    STACK                                    0x200002b0   Section     1024  startup_stm32f401xe.o(STACK)
+    __initial_sp                             0x200006b0   Data           0  startup_stm32f401xe.o(STACK)
 
     Global Symbols
 
@@ -489,10 +486,10 @@ Image Symbol Table
     DMA2_Stream6_IRQHandler                  0x0800024f   Thumb Code     0  startup_stm32f401xe.o(.text)
     DMA2_Stream7_IRQHandler                  0x0800024f   Thumb Code     0  startup_stm32f401xe.o(.text)
     EXTI0_IRQHandler                         0x0800024f   Thumb Code     0  startup_stm32f401xe.o(.text)
-    EXTI15_10_IRQHandler                     0x0800024f   Thumb Code     0  startup_stm32f401xe.o(.text)
     EXTI1_IRQHandler                         0x0800024f   Thumb Code     0  startup_stm32f401xe.o(.text)
     EXTI2_IRQHandler                         0x0800024f   Thumb Code     0  startup_stm32f401xe.o(.text)
     EXTI3_IRQHandler                         0x0800024f   Thumb Code     0  startup_stm32f401xe.o(.text)
+    EXTI4_IRQHandler                         0x0800024f   Thumb Code     0  startup_stm32f401xe.o(.text)
     EXTI9_5_IRQHandler                       0x0800024f   Thumb Code     0  startup_stm32f401xe.o(.text)
     FLASH_IRQHandler                         0x0800024f   Thumb Code     0  startup_stm32f401xe.o(.text)
     FPU_IRQHandler                           0x0800024f   Thumb Code     0  startup_stm32f401xe.o(.text)
@@ -539,27 +536,27 @@ Image Symbol Table
     __I$use$semihosting                      0x080002ed   Thumb Code     0  use_no_semi.o(.text)
     __use_no_semihosting_swi                 0x080002ed   Thumb Code     2  use_no_semi.o(.text)
     __semihosting_library_function           0x080002ef   Thumb Code     0  indicate_semi.o(.text)
-    EXIT_INIT                                0x080002f1   Thumb Code   150  exti.o(.text.EXIT_INIT)
-    EXTI4_IRQHandler                         0x08000389   Thumb Code   652  main_exti.o(.text.EXTI4_IRQHandler)
-    EXTI_EnableClock                         0x08000615   Thumb Code    18  exti.o(.text.EXTI_EnableClock)
-    GPIO_EnableClock                         0x08000629   Thumb Code    36  gpio.o(.text.GPIO_EnableClock)
-    GPIO_Init                                0x0800064d   Thumb Code   104  gpio.o(.text.GPIO_Init)
-    GPIO_ReadPin                             0x080006b5   Thumb Code    48  gpio.o(.text.GPIO_ReadPin)
-    GPIO_WritePin                            0x080006e5   Thumb Code    88  gpio.o(.text.GPIO_WritePin)
-    KHEXT                                    0x0800073d   Thumb Code    32  main_exti.o(.text.KHEXT)
-    KHPA                                     0x0800075d   Thumb Code    58  main_exti.o(.text.KHPA)
-    NVIC_ConfigIRQ                           0x08000799   Thumb Code    36  exti.o(.text.NVIC_ConfigIRQ)
-    SystemInit                               0x080007bd   Thumb Code    18  system_stm32f4xx.o(.text.SystemInit)
-    bin_to_bcd                               0x080008a5   Thumb Code   104  main_exti.o(.text.bin_to_bcd)
-    main                                     0x0800090d   Thumb Code   316  main_exti.o(.text.main)
-    pascal                                   0x08000a49   Thumb Code    72  main_exti.o(.text.pascal)
-    _fp_init                                 0x08000a91   Thumb Code    26  fpinit.o(x$fpl$fpinit)
-    __fplib_config_fpu_vfp                   0x08000aa9   Thumb Code     0  fpinit.o(x$fpl$fpinit)
-    __fplib_config_pureend_doubles           0x08000aa9   Thumb Code     0  fpinit.o(x$fpl$fpinit)
-    Region$$Table$$Base                      0x08000ab4   Number         0  anon$$obj.o(Region$$Table)
-    Region$$Table$$Limit                     0x08000ad4   Number         0  anon$$obj.o(Region$$Table)
-    __libspace_start                         0x200000d8   Data          96  libspace.o(.bss)
-    __temporary_stack_top$libspace           0x20000138   Data           0  libspace.o(.bss)
+    EXIT_INIT                                0x080002f1   Thumb Code   160  exti.o(.text.EXIT_INIT)
+    EXTI15_10_IRQHandler                     0x08000391   Thumb Code   616  main_exti.o(.text.EXTI15_10_IRQHandler)
+    EXTI_EnableClock                         0x080005f9   Thumb Code    18  exti.o(.text.EXTI_EnableClock)
+    GPIO_EnableClock                         0x0800060d   Thumb Code    36  gpio.o(.text.GPIO_EnableClock)
+    GPIO_Init                                0x08000631   Thumb Code   238  gpio.o(.text.GPIO_Init)
+    GPIO_ReadPin                             0x08000721   Thumb Code    48  gpio.o(.text.GPIO_ReadPin)
+    GPIO_WritePin                            0x08000751   Thumb Code    88  gpio.o(.text.GPIO_WritePin)
+    KHEXT                                    0x080007a9   Thumb Code    32  main_exti.o(.text.KHEXT)
+    KHPA                                     0x080007c9   Thumb Code    58  main_exti.o(.text.KHPA)
+    NVIC_ConfigIRQ                           0x08000805   Thumb Code    38  exti.o(.text.NVIC_ConfigIRQ)
+    SystemInit                               0x0800082d   Thumb Code    18  system_stm32f4xx.o(.text.SystemInit)
+    bin_to_bcd                               0x08000915   Thumb Code   104  main_exti.o(.text.bin_to_bcd)
+    main                                     0x0800097d   Thumb Code   262  main_exti.o(.text.main)
+    pascal                                   0x08000a85   Thumb Code    72  main_exti.o(.text.pascal)
+    _fp_init                                 0x08000acd   Thumb Code    26  fpinit.o(x$fpl$fpinit)
+    __fplib_config_fpu_vfp                   0x08000ae5   Thumb Code     0  fpinit.o(x$fpl$fpinit)
+    __fplib_config_pureend_doubles           0x08000ae5   Thumb Code     0  fpinit.o(x$fpl$fpinit)
+    Region$$Table$$Base                      0x08000af0   Number         0  anon$$obj.o(Region$$Table)
+    Region$$Table$$Limit                     0x08000b10   Number         0  anon$$obj.o(Region$$Table)
+    __libspace_start                         0x20000018   Data          96  libspace.o(.bss)
+    __temporary_stack_top$libspace           0x20000078   Data           0  libspace.o(.bss)
 
 
 
@@ -569,114 +566,115 @@ Memory Map of the image
 
   Image Entry point : 0x08000195
 
-  Load Region LR_IROM1 (Base: 0x08000000, Size: 0x00000bb0, Max: 0x00080000, ABSOLUTE)
+  Load Region LR_IROM1 (Base: 0x08000000, Size: 0x00000b28, Max: 0x00080000, ABSOLUTE)
 
-    Execution Region ER_IROM1 (Exec base: 0x08000000, Load base: 0x08000000, Size: 0x00000ad4, Max: 0x00080000, ABSOLUTE)
+    Execution Region ER_IROM1 (Exec base: 0x08000000, Load base: 0x08000000, Size: 0x00000b10, Max: 0x00080000, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
-    0x08000000   0x08000000   0x00000194   Data   RO           67    RESET               startup_stm32f401xe.o
-    0x08000194   0x08000194   0x00000008   Code   RO           92  * !!!main             c_w.l(__main.o)
-    0x0800019c   0x0800019c   0x00000034   Code   RO          257    !!!scatter          c_w.l(__scatter.o)
-    0x080001d0   0x080001d0   0x0000001a   Code   RO          259    !!handler_copy      c_w.l(__scatter_copy.o)
+    0x08000000   0x08000000   0x00000194   Data   RO           66    RESET               startup_stm32f401xe.o
+    0x08000194   0x08000194   0x00000008   Code   RO           91  * !!!main             c_w.l(__main.o)
+    0x0800019c   0x0800019c   0x00000034   Code   RO          256    !!!scatter          c_w.l(__scatter.o)
+    0x080001d0   0x080001d0   0x0000001a   Code   RO          258    !!handler_copy      c_w.l(__scatter_copy.o)
     0x080001ea   0x080001ea   0x00000002   PAD
-    0x080001ec   0x080001ec   0x0000001c   Code   RO          261    !!handler_zi        c_w.l(__scatter_zi.o)
-    0x08000208   0x08000208   0x00000002   Code   RO          119    .ARM.Collect$$libinit$$00000000  c_w.l(libinit.o)
-    0x0800020a   0x0800020a   0x00000004   Code   RO          125    .ARM.Collect$$libinit$$00000001  c_w.l(libinit2.o)
-    0x0800020e   0x0800020e   0x00000000   Code   RO          128    .ARM.Collect$$libinit$$00000004  c_w.l(libinit2.o)
-    0x0800020e   0x0800020e   0x00000000   Code   RO          130    .ARM.Collect$$libinit$$00000006  c_w.l(libinit2.o)
-    0x0800020e   0x0800020e   0x00000000   Code   RO          133    .ARM.Collect$$libinit$$0000000C  c_w.l(libinit2.o)
-    0x0800020e   0x0800020e   0x00000000   Code   RO          135    .ARM.Collect$$libinit$$0000000E  c_w.l(libinit2.o)
-    0x0800020e   0x0800020e   0x00000000   Code   RO          137    .ARM.Collect$$libinit$$00000010  c_w.l(libinit2.o)
-    0x0800020e   0x0800020e   0x00000000   Code   RO          140    .ARM.Collect$$libinit$$00000013  c_w.l(libinit2.o)
-    0x0800020e   0x0800020e   0x00000000   Code   RO          142    .ARM.Collect$$libinit$$00000015  c_w.l(libinit2.o)
-    0x0800020e   0x0800020e   0x00000000   Code   RO          144    .ARM.Collect$$libinit$$00000017  c_w.l(libinit2.o)
-    0x0800020e   0x0800020e   0x00000000   Code   RO          146    .ARM.Collect$$libinit$$00000019  c_w.l(libinit2.o)
-    0x0800020e   0x0800020e   0x00000000   Code   RO          148    .ARM.Collect$$libinit$$0000001B  c_w.l(libinit2.o)
-    0x0800020e   0x0800020e   0x00000000   Code   RO          150    .ARM.Collect$$libinit$$0000001D  c_w.l(libinit2.o)
-    0x0800020e   0x0800020e   0x00000000   Code   RO          152    .ARM.Collect$$libinit$$0000001F  c_w.l(libinit2.o)
-    0x0800020e   0x0800020e   0x00000000   Code   RO          154    .ARM.Collect$$libinit$$00000021  c_w.l(libinit2.o)
-    0x0800020e   0x0800020e   0x00000000   Code   RO          156    .ARM.Collect$$libinit$$00000023  c_w.l(libinit2.o)
-    0x0800020e   0x0800020e   0x00000000   Code   RO          158    .ARM.Collect$$libinit$$00000025  c_w.l(libinit2.o)
-    0x0800020e   0x0800020e   0x00000000   Code   RO          160    .ARM.Collect$$libinit$$00000027  c_w.l(libinit2.o)
-    0x0800020e   0x0800020e   0x00000000   Code   RO          164    .ARM.Collect$$libinit$$0000002E  c_w.l(libinit2.o)
-    0x0800020e   0x0800020e   0x00000000   Code   RO          166    .ARM.Collect$$libinit$$00000030  c_w.l(libinit2.o)
-    0x0800020e   0x0800020e   0x00000000   Code   RO          168    .ARM.Collect$$libinit$$00000032  c_w.l(libinit2.o)
-    0x0800020e   0x0800020e   0x00000000   Code   RO          170    .ARM.Collect$$libinit$$00000034  c_w.l(libinit2.o)
-    0x0800020e   0x0800020e   0x00000002   Code   RO          171    .ARM.Collect$$libinit$$00000035  c_w.l(libinit2.o)
-    0x08000210   0x08000210   0x00000002   Code   RO          193    .ARM.Collect$$libshutdown$$00000000  c_w.l(libshutdown.o)
-    0x08000212   0x08000212   0x00000000   Code   RO          208    .ARM.Collect$$libshutdown$$00000002  c_w.l(libshutdown2.o)
-    0x08000212   0x08000212   0x00000000   Code   RO          210    .ARM.Collect$$libshutdown$$00000004  c_w.l(libshutdown2.o)
-    0x08000212   0x08000212   0x00000000   Code   RO          213    .ARM.Collect$$libshutdown$$00000007  c_w.l(libshutdown2.o)
-    0x08000212   0x08000212   0x00000000   Code   RO          216    .ARM.Collect$$libshutdown$$0000000A  c_w.l(libshutdown2.o)
-    0x08000212   0x08000212   0x00000000   Code   RO          218    .ARM.Collect$$libshutdown$$0000000C  c_w.l(libshutdown2.o)
-    0x08000212   0x08000212   0x00000000   Code   RO          221    .ARM.Collect$$libshutdown$$0000000F  c_w.l(libshutdown2.o)
-    0x08000212   0x08000212   0x00000002   Code   RO          222    .ARM.Collect$$libshutdown$$00000010  c_w.l(libshutdown2.o)
-    0x08000214   0x08000214   0x00000000   Code   RO           94    .ARM.Collect$$rtentry$$00000000  c_w.l(__rtentry.o)
-    0x08000214   0x08000214   0x00000000   Code   RO           96    .ARM.Collect$$rtentry$$00000002  c_w.l(__rtentry2.o)
-    0x08000214   0x08000214   0x00000006   Code   RO          108    .ARM.Collect$$rtentry$$00000004  c_w.l(__rtentry4.o)
-    0x0800021a   0x0800021a   0x00000000   Code   RO           98    .ARM.Collect$$rtentry$$00000009  c_w.l(__rtentry2.o)
-    0x0800021a   0x0800021a   0x00000004   Code   RO           99    .ARM.Collect$$rtentry$$0000000A  c_w.l(__rtentry2.o)
-    0x0800021e   0x0800021e   0x00000000   Code   RO          101    .ARM.Collect$$rtentry$$0000000C  c_w.l(__rtentry2.o)
-    0x0800021e   0x0800021e   0x00000008   Code   RO          102    .ARM.Collect$$rtentry$$0000000D  c_w.l(__rtentry2.o)
-    0x08000226   0x08000226   0x00000002   Code   RO          123    .ARM.Collect$$rtexit$$00000000  c_w.l(rtexit.o)
-    0x08000228   0x08000228   0x00000000   Code   RO          173    .ARM.Collect$$rtexit$$00000002  c_w.l(rtexit2.o)
-    0x08000228   0x08000228   0x00000004   Code   RO          174    .ARM.Collect$$rtexit$$00000003  c_w.l(rtexit2.o)
-    0x0800022c   0x0800022c   0x00000006   Code   RO          175    .ARM.Collect$$rtexit$$00000004  c_w.l(rtexit2.o)
+    0x080001ec   0x080001ec   0x0000001c   Code   RO          260    !!handler_zi        c_w.l(__scatter_zi.o)
+    0x08000208   0x08000208   0x00000002   Code   RO          118    .ARM.Collect$$libinit$$00000000  c_w.l(libinit.o)
+    0x0800020a   0x0800020a   0x00000004   Code   RO          124    .ARM.Collect$$libinit$$00000001  c_w.l(libinit2.o)
+    0x0800020e   0x0800020e   0x00000000   Code   RO          127    .ARM.Collect$$libinit$$00000004  c_w.l(libinit2.o)
+    0x0800020e   0x0800020e   0x00000000   Code   RO          129    .ARM.Collect$$libinit$$00000006  c_w.l(libinit2.o)
+    0x0800020e   0x0800020e   0x00000000   Code   RO          132    .ARM.Collect$$libinit$$0000000C  c_w.l(libinit2.o)
+    0x0800020e   0x0800020e   0x00000000   Code   RO          134    .ARM.Collect$$libinit$$0000000E  c_w.l(libinit2.o)
+    0x0800020e   0x0800020e   0x00000000   Code   RO          136    .ARM.Collect$$libinit$$00000010  c_w.l(libinit2.o)
+    0x0800020e   0x0800020e   0x00000000   Code   RO          139    .ARM.Collect$$libinit$$00000013  c_w.l(libinit2.o)
+    0x0800020e   0x0800020e   0x00000000   Code   RO          141    .ARM.Collect$$libinit$$00000015  c_w.l(libinit2.o)
+    0x0800020e   0x0800020e   0x00000000   Code   RO          143    .ARM.Collect$$libinit$$00000017  c_w.l(libinit2.o)
+    0x0800020e   0x0800020e   0x00000000   Code   RO          145    .ARM.Collect$$libinit$$00000019  c_w.l(libinit2.o)
+    0x0800020e   0x0800020e   0x00000000   Code   RO          147    .ARM.Collect$$libinit$$0000001B  c_w.l(libinit2.o)
+    0x0800020e   0x0800020e   0x00000000   Code   RO          149    .ARM.Collect$$libinit$$0000001D  c_w.l(libinit2.o)
+    0x0800020e   0x0800020e   0x00000000   Code   RO          151    .ARM.Collect$$libinit$$0000001F  c_w.l(libinit2.o)
+    0x0800020e   0x0800020e   0x00000000   Code   RO          153    .ARM.Collect$$libinit$$00000021  c_w.l(libinit2.o)
+    0x0800020e   0x0800020e   0x00000000   Code   RO          155    .ARM.Collect$$libinit$$00000023  c_w.l(libinit2.o)
+    0x0800020e   0x0800020e   0x00000000   Code   RO          157    .ARM.Collect$$libinit$$00000025  c_w.l(libinit2.o)
+    0x0800020e   0x0800020e   0x00000000   Code   RO          159    .ARM.Collect$$libinit$$00000027  c_w.l(libinit2.o)
+    0x0800020e   0x0800020e   0x00000000   Code   RO          163    .ARM.Collect$$libinit$$0000002E  c_w.l(libinit2.o)
+    0x0800020e   0x0800020e   0x00000000   Code   RO          165    .ARM.Collect$$libinit$$00000030  c_w.l(libinit2.o)
+    0x0800020e   0x0800020e   0x00000000   Code   RO          167    .ARM.Collect$$libinit$$00000032  c_w.l(libinit2.o)
+    0x0800020e   0x0800020e   0x00000000   Code   RO          169    .ARM.Collect$$libinit$$00000034  c_w.l(libinit2.o)
+    0x0800020e   0x0800020e   0x00000002   Code   RO          170    .ARM.Collect$$libinit$$00000035  c_w.l(libinit2.o)
+    0x08000210   0x08000210   0x00000002   Code   RO          192    .ARM.Collect$$libshutdown$$00000000  c_w.l(libshutdown.o)
+    0x08000212   0x08000212   0x00000000   Code   RO          207    .ARM.Collect$$libshutdown$$00000002  c_w.l(libshutdown2.o)
+    0x08000212   0x08000212   0x00000000   Code   RO          209    .ARM.Collect$$libshutdown$$00000004  c_w.l(libshutdown2.o)
+    0x08000212   0x08000212   0x00000000   Code   RO          212    .ARM.Collect$$libshutdown$$00000007  c_w.l(libshutdown2.o)
+    0x08000212   0x08000212   0x00000000   Code   RO          215    .ARM.Collect$$libshutdown$$0000000A  c_w.l(libshutdown2.o)
+    0x08000212   0x08000212   0x00000000   Code   RO          217    .ARM.Collect$$libshutdown$$0000000C  c_w.l(libshutdown2.o)
+    0x08000212   0x08000212   0x00000000   Code   RO          220    .ARM.Collect$$libshutdown$$0000000F  c_w.l(libshutdown2.o)
+    0x08000212   0x08000212   0x00000002   Code   RO          221    .ARM.Collect$$libshutdown$$00000010  c_w.l(libshutdown2.o)
+    0x08000214   0x08000214   0x00000000   Code   RO           93    .ARM.Collect$$rtentry$$00000000  c_w.l(__rtentry.o)
+    0x08000214   0x08000214   0x00000000   Code   RO           95    .ARM.Collect$$rtentry$$00000002  c_w.l(__rtentry2.o)
+    0x08000214   0x08000214   0x00000006   Code   RO          107    .ARM.Collect$$rtentry$$00000004  c_w.l(__rtentry4.o)
+    0x0800021a   0x0800021a   0x00000000   Code   RO           97    .ARM.Collect$$rtentry$$00000009  c_w.l(__rtentry2.o)
+    0x0800021a   0x0800021a   0x00000004   Code   RO           98    .ARM.Collect$$rtentry$$0000000A  c_w.l(__rtentry2.o)
+    0x0800021e   0x0800021e   0x00000000   Code   RO          100    .ARM.Collect$$rtentry$$0000000C  c_w.l(__rtentry2.o)
+    0x0800021e   0x0800021e   0x00000008   Code   RO          101    .ARM.Collect$$rtentry$$0000000D  c_w.l(__rtentry2.o)
+    0x08000226   0x08000226   0x00000002   Code   RO          122    .ARM.Collect$$rtexit$$00000000  c_w.l(rtexit.o)
+    0x08000228   0x08000228   0x00000000   Code   RO          172    .ARM.Collect$$rtexit$$00000002  c_w.l(rtexit2.o)
+    0x08000228   0x08000228   0x00000004   Code   RO          173    .ARM.Collect$$rtexit$$00000003  c_w.l(rtexit2.o)
+    0x0800022c   0x0800022c   0x00000006   Code   RO          174    .ARM.Collect$$rtexit$$00000004  c_w.l(rtexit2.o)
     0x08000232   0x08000232   0x00000002   PAD
-    0x08000234   0x08000234   0x00000040   Code   RO           68    .text               startup_stm32f401xe.o
-    0x08000274   0x08000274   0x00000006   Code   RO           90    .text               c_w.l(heapauxi.o)
-    0x0800027a   0x0800027a   0x0000004a   Code   RO          110    .text               c_w.l(sys_stackheap_outer.o)
-    0x080002c4   0x080002c4   0x00000012   Code   RO          112    .text               c_w.l(exit.o)
+    0x08000234   0x08000234   0x00000040   Code   RO           67    .text               startup_stm32f401xe.o
+    0x08000274   0x08000274   0x00000006   Code   RO           89    .text               c_w.l(heapauxi.o)
+    0x0800027a   0x0800027a   0x0000004a   Code   RO          109    .text               c_w.l(sys_stackheap_outer.o)
+    0x080002c4   0x080002c4   0x00000012   Code   RO          111    .text               c_w.l(exit.o)
     0x080002d6   0x080002d6   0x00000002   PAD
-    0x080002d8   0x080002d8   0x00000008   Code   RO          120    .text               c_w.l(libspace.o)
-    0x080002e0   0x080002e0   0x0000000c   Code   RO          183    .text               c_w.l(sys_exit.o)
-    0x080002ec   0x080002ec   0x00000002   Code   RO          198    .text               c_w.l(use_no_semi.o)
-    0x080002ee   0x080002ee   0x00000000   Code   RO          200    .text               c_w.l(indicate_semi.o)
+    0x080002d8   0x080002d8   0x00000008   Code   RO          119    .text               c_w.l(libspace.o)
+    0x080002e0   0x080002e0   0x0000000c   Code   RO          182    .text               c_w.l(sys_exit.o)
+    0x080002ec   0x080002ec   0x00000002   Code   RO          197    .text               c_w.l(use_no_semi.o)
+    0x080002ee   0x080002ee   0x00000000   Code   RO          199    .text               c_w.l(indicate_semi.o)
     0x080002ee   0x080002ee   0x00000002   PAD
-    0x080002f0   0x080002f0   0x00000096   Code   RO           31    .text.EXIT_INIT     exti.o
-    0x08000386   0x08000386   0x00000002   PAD
-    0x08000388   0x08000388   0x0000028c   Code   RO           12    .text.EXTI4_IRQHandler  main_exti.o
-    0x08000614   0x08000614   0x00000012   Code   RO           29    .text.EXTI_EnableClock  exti.o
-    0x08000626   0x08000626   0x00000002   PAD
-    0x08000628   0x08000628   0x00000024   Code   RO           49    .text.GPIO_EnableClock  gpio.o
-    0x0800064c   0x0800064c   0x00000068   Code   RO           51    .text.GPIO_Init     gpio.o
-    0x080006b4   0x080006b4   0x00000030   Code   RO           55    .text.GPIO_ReadPin  gpio.o
-    0x080006e4   0x080006e4   0x00000058   Code   RO           53    .text.GPIO_WritePin  gpio.o
-    0x0800073c   0x0800073c   0x00000020   Code   RO            8    .text.KHEXT         main_exti.o
-    0x0800075c   0x0800075c   0x0000003a   Code   RO            6    .text.KHPA          main_exti.o
-    0x08000796   0x08000796   0x00000002   PAD
-    0x08000798   0x08000798   0x00000024   Code   RO           33    .text.NVIC_ConfigIRQ  exti.o
-    0x080007bc   0x080007bc   0x00000012   Code   RO           75    .text.SystemInit    system_stm32f4xx.o
-    0x080007ce   0x080007ce   0x00000002   PAD
-    0x080007d0   0x080007d0   0x00000030   Code   RO           14    .text.__NVIC_ClearPendingIRQ  main_exti.o
-    0x08000800   0x08000800   0x00000030   Code   RO           37    .text.__NVIC_ClearPendingIRQ  exti.o
-    0x08000830   0x08000830   0x00000030   Code   RO           39    .text.__NVIC_EnableIRQ  exti.o
-    0x08000860   0x08000860   0x00000042   Code   RO           35    .text.__NVIC_SetPriority  exti.o
-    0x080008a2   0x080008a2   0x00000002   PAD
-    0x080008a4   0x080008a4   0x00000068   Code   RO           10    .text.bin_to_bcd    main_exti.o
-    0x0800090c   0x0800090c   0x0000013c   Code   RO            2    .text.main          main_exti.o
-    0x08000a48   0x08000a48   0x00000048   Code   RO            4    .text.pascal        main_exti.o
-    0x08000a90   0x08000a90   0x0000001a   Code   RO          181    x$fpl$fpinit        fz_wm.l(fpinit.o)
-    0x08000aaa   0x08000aaa   0x0000000a   Data   RO           16    .rodata.sevenSegHex  main_exti.o
-    0x08000ab4   0x08000ab4   0x00000020   Data   RO          256    Region$$Table       anon$$obj.o
+    0x080002f0   0x080002f0   0x000000a0   Code   RO           31    .text.EXIT_INIT     exti.o
+    0x08000390   0x08000390   0x00000268   Code   RO           12    .text.EXTI15_10_IRQHandler  main_exti.o
+    0x080005f8   0x080005f8   0x00000012   Code   RO           29    .text.EXTI_EnableClock  exti.o
+    0x0800060a   0x0800060a   0x00000002   PAD
+    0x0800060c   0x0800060c   0x00000024   Code   RO           48    .text.GPIO_EnableClock  gpio.o
+    0x08000630   0x08000630   0x000000ee   Code   RO           50    .text.GPIO_Init     gpio.o
+    0x0800071e   0x0800071e   0x00000002   PAD
+    0x08000720   0x08000720   0x00000030   Code   RO           54    .text.GPIO_ReadPin  gpio.o
+    0x08000750   0x08000750   0x00000058   Code   RO           52    .text.GPIO_WritePin  gpio.o
+    0x080007a8   0x080007a8   0x00000020   Code   RO            8    .text.KHEXT         main_exti.o
+    0x080007c8   0x080007c8   0x0000003a   Code   RO            6    .text.KHPA          main_exti.o
+    0x08000802   0x08000802   0x00000002   PAD
+    0x08000804   0x08000804   0x00000026   Code   RO           33    .text.NVIC_ConfigIRQ  exti.o
+    0x0800082a   0x0800082a   0x00000002   PAD
+    0x0800082c   0x0800082c   0x00000012   Code   RO           74    .text.SystemInit    system_stm32f4xx.o
+    0x0800083e   0x0800083e   0x00000002   PAD
+    0x08000840   0x08000840   0x00000030   Code   RO           14    .text.__NVIC_ClearPendingIRQ  main_exti.o
+    0x08000870   0x08000870   0x00000030   Code   RO           37    .text.__NVIC_ClearPendingIRQ  exti.o
+    0x080008a0   0x080008a0   0x00000030   Code   RO           39    .text.__NVIC_EnableIRQ  exti.o
+    0x080008d0   0x080008d0   0x00000042   Code   RO           35    .text.__NVIC_SetPriority  exti.o
+    0x08000912   0x08000912   0x00000002   PAD
+    0x08000914   0x08000914   0x00000068   Code   RO           10    .text.bin_to_bcd    main_exti.o
+    0x0800097c   0x0800097c   0x00000106   Code   RO            2    .text.main          main_exti.o
+    0x08000a82   0x08000a82   0x00000002   PAD
+    0x08000a84   0x08000a84   0x00000048   Code   RO            4    .text.pascal        main_exti.o
+    0x08000acc   0x08000acc   0x0000001a   Code   RO          180    x$fpl$fpinit        fz_wm.l(fpinit.o)
+    0x08000ae6   0x08000ae6   0x0000000a   Data   RO           16    .rodata.sevenSegHex  main_exti.o
+    0x08000af0   0x08000af0   0x00000020   Data   RO          255    Region$$Table       anon$$obj.o
 
 
-    Execution Region RW_IRAM1 (Exec base: 0x20000000, Load base: 0x08000ad8, Size: 0x00000770, Max: 0x00018000, ABSOLUTE)
+    Execution Region RW_IRAM1 (Exec base: 0x20000000, Load base: 0x08000b10, Size: 0x000006b0, Max: 0x00018000, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
-    0x20000000   0x08000ad8   0x0000000c   Data   RW           58    .data.GPIO_PORTS    gpio.o
-    0x2000000c   0x08000ae4   0x0000000c   Data   RW           57    .data.RCC_AHB1ENR_GPIOEN  gpio.o
-    0x20000018   0x08000af0   0x000000c0   Data   RW           41    .data.SYSCFG_EXTICR_EXTI  exti.o
-    0x200000d8        -       0x00000060   Zero   RW          121    .bss                c_w.l(libspace.o)
-    0x20000138        -       0x00000028   Zero   RW           17    .bss.COEFS          main_exti.o
-    0x20000160        -       0x00000004   Zero   RW           20    .bss.M              main_exti.o
-    0x20000164        -       0x00000004   Zero   RW           19    .bss.N              main_exti.o
-    0x20000168        -       0x00000004   Zero   RW           18    .bss.button_counter  main_exti.o
-    0x2000016c   0x08000bb0   0x00000004   PAD
-    0x20000170        -       0x00000200   Zero   RW           66    HEAP                startup_stm32f401xe.o
-    0x20000370        -       0x00000400   Zero   RW           65    STACK               startup_stm32f401xe.o
+    0x20000000   0x08000b10   0x0000000c   Data   RW           57    .data.GPIO_PORTS    gpio.o
+    0x2000000c   0x08000b1c   0x0000000c   Data   RW           56    .data.RCC_AHB1ENR_GPIOEN  gpio.o
+    0x20000018        -       0x00000060   Zero   RW          120    .bss                c_w.l(libspace.o)
+    0x20000078        -       0x00000028   Zero   RW           17    .bss.COEFS          main_exti.o
+    0x200000a0        -       0x00000004   Zero   RW           20    .bss.M              main_exti.o
+    0x200000a4        -       0x00000004   Zero   RW           19    .bss.N              main_exti.o
+    0x200000a8        -       0x00000004   Zero   RW           18    .bss.button_counter  main_exti.o
+    0x200000ac   0x08000b28   0x00000004   PAD
+    0x200000b0        -       0x00000200   Zero   RW           65    HEAP                startup_stm32f401xe.o
+    0x200002b0        -       0x00000400   Zero   RW           64    STACK               startup_stm32f401xe.o
 
 
 ==============================================================================
@@ -686,16 +684,16 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Object Name
 
-       366          0          0        192          0       5083   exti.o
-       276          0          0         24          0       2465   gpio.o
-      1282          0         10          0         52       5150   main_exti.o
+       378          0          0          0          0       5053   exti.o
+       410          0          0         24          0       2566   gpio.o
+      1192          0         10          0         52       4987   main_exti.o
         64         26        404          0       1536        936   startup_stm32f401xe.o
         18          0          0          0          0       2759   system_stm32f4xx.o
 
     ----------------------------------------------------------------------
-      2016         26        446        216       1592      16393   Object Totals
+      2076         26        446         24       1592      16301   Object Totals
          0          0         32          0          0          0   (incl. Generated)
-        10          0          0          0          4          0   (incl. Padding)
+        14          0          0          0          4          0   (incl. Padding)
 
     ----------------------------------------------------------------------
 
@@ -744,15 +742,15 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-      2326         42        446        216       1688      16877   Grand Totals
-      2326         42        446        216       1688      16877   ELF Image Totals
-      2326         42        446        216          0          0   ROM Totals
+      2386         42        446         24       1688      16785   Grand Totals
+      2386         42        446         24       1688      16785   ELF Image Totals
+      2386         42        446         24          0          0   ROM Totals
 
 ==============================================================================
 
-    Total RO  Size (Code + RO Data)                 2772 (   2.71kB)
-    Total RW  Size (RW Data + ZI Data)              1904 (   1.86kB)
-    Total ROM Size (Code + RO Data + RW Data)       2988 (   2.92kB)
+    Total RO  Size (Code + RO Data)                 2832 (   2.77kB)
+    Total RW  Size (RW Data + ZI Data)              1712 (   1.67kB)
+    Total ROM Size (Code + RO Data + RW Data)       2856 (   2.79kB)
 
 ==============================================================================
 

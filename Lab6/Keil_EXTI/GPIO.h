@@ -33,7 +33,7 @@
 
 
 void GPIO_EnableClock(int Port);
-void GPIO_Init(int Port, char PIN_NO, char PIN_Dir);
+void GPIO_Init(int Port, char PIN_NO, char PIN_Dir, char PIN_PuPd);
 void GPIO_WritePin(int Port, char PIN_NO, char Data);
 unsigned int GPIO_ReadPin(int PortID, char PIN_NO);
 

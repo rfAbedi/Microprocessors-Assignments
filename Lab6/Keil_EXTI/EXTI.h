@@ -3,7 +3,7 @@
  *
  *  Created on: Dec 29, 2021
  *      Author: Radwa_Saeed
- * 	Edited on: Nov 18, 2023
+ * 	Edited on: Nov 25, 2023
  * 		By: rfAbedi
  */
 
@@ -34,10 +34,11 @@
 /* state options: */
 #define FALLING 1
 #define RISSING 2
+#define FALLING_RISSING 3
 
 
 void EXTI_EnableClock(void);
-void EXIT_INIT(int Port, int EXTx, char state);
-void NVIC_ConfigIRQ(int IRQn);
+void EXIT_INIT(unsigned int Port, int EXTx, char state);
+void NVIC_ConfigIRQ(int IRQn, int priority);
 
 #endif /* INC_EXTI_H_ */

@@ -18,22 +18,34 @@ void GPIO_EnableClock(int Port) {
 	RCC->AHB1ENR |= RCC_AHB1ENR_GPIOEN[Port];
 }
 
-void GPIO_Init(int Port, char PIN_NO, char PIN_Dir) {
+void GPIO_Init(int Port, char PIN_NO, char PIN_Dir, char PIN_PuPd) {
 	switch (PIN_Dir) {
 		case (INPUT):
-			GPIO_PORTS[Port]->MODER &= ~(0x03 << 2 * PIN_NO);
+			GPIO_PORTS[Port]->MODER &= ~(0x03UL << 2*PIN_NO);
 		break;
 		case (OUTPUT):
-			GPIO_PORTS[Port]->MODER |= (0x01 << 2 * PIN_NO);
+			GPIO_PORTS[Port]->MODER |= (0x01UL << 2*PIN_NO);
 		break;
 	}
+	
+	switch (PIN_PuPd) {
+	 	case (PULL_UP):
+	 		GPIO_PORTS[Port]->PUPDR |= (0x01UL << 2*PIN_NO);
+ 	break;
+	 	case (PULL_DOWN):
+	 		GPIO_PORTS[Port]->PUPDR |= (0x02UL << 2*PIN_NO);
+	 	break;
+	 	case (NO_PULL_UP_DOWN):
+	 		GPIO_PORTS[Port]->PUPDR &= ~(0x03UL << 2*PIN_NO);
+	 	break;
+	 }
 }
 
 void GPIO_WritePin(int Port, char PIN_NO, char Data) {
 	if(Data) {
-		GPIO_PORTS[Port]->ODR |= (1<<PIN_NO);
+		GPIO_PORTS[Port]->ODR |= (1 << PIN_NO);
 	} else {
-		GPIO_PORTS[Port]->ODR &= ~(1<<PIN_NO);
+		GPIO_PORTS[Port]->ODR &= ~(1 << PIN_NO);
 	}
 }
 
