@@ -28,7 +28,7 @@ int main(void) {
 	// Init DipSwitch
 	GPIO_EnableClock(B);
 	for (char i = 0; i < 4; i++) {
-		GPIO_Init(B, i, INPUT, NO_PULL_UP_DOWN);
+		GPIO_Init(B, i, INPUT, PULL_DOWN);
 	}
 
 	// Init UserButton
