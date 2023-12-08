@@ -20,8 +20,10 @@ int main(void) {
 	// Init SevenSegment
 	GPIO_EnableClock(A);
 	GPIO_EnableClock(C);
-	for (char i = 0; i < 7; i++) {
+	for (char i = 5; i < 12; i++) {
 		GPIO_Init(A, i, OUTPUT, NO_PULL_UP_DOWN);
+	}
+	for (char i = 0; i < 7; i++) {
 		GPIO_Init(C, i, OUTPUT, NO_PULL_UP_DOWN);
 	}
 
@@ -44,8 +46,10 @@ int main(void) {
 
 
 	// Clear SevenSeg Display
+	for (char i = 5; i < 12; i++) {
+		GPIO_WritePin(A, i, (sevenSegHex[0] >> (i-5)) & 0x01);
+	}
 	for (char i = 0; i < 7; i++) {
-		GPIO_WritePin(A, i, (sevenSegHex[0] >> i) & 0x01);
 		GPIO_WritePin(C, i, (sevenSegHex[0] >> i) & 0x01);
 	}
 
@@ -92,8 +96,8 @@ void EXTI15_10_IRQHandler(void) {
 				N |= (GPIO_ReadPin(B, i) << i);
 			}
 
-			for (char i = 0; i < 7; i++) {
-				GPIO_WritePin(A, i, (sevenSegHex[bin_to_bcd(N)] >> i) & 0x01);
+			for (char i = 5; i < 12; i++) {
+				GPIO_WritePin(A, i, (sevenSegHex[bin_to_bcd(N)] >> (i-5)) & 0x01);
 			}
 			
 			button_counter++;
@@ -114,8 +118,10 @@ void EXTI15_10_IRQHandler(void) {
 			int digit_1 = bcd & 0x0F;
 			int digit_2 = (bcd >> 4) & 0x0F;
 
+			for (char i = 5; i < 12; i++) {
+				GPIO_WritePin(A, i, (sevenSegHex[digit_1] >> (i-5)) & 0x01);
+			}
 			for (char i = 0; i < 7; i++) {
-				GPIO_WritePin(A, i, (sevenSegHex[digit_1] >> i) & 0x01);
 				GPIO_WritePin(C, i, (sevenSegHex[digit_2] >> i) & 0x01);
 			}
 
