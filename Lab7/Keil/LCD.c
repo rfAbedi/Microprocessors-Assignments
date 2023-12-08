@@ -2,6 +2,9 @@
 #include "stm32f401xe.h"
 
 
+int printed_length = 0;
+
+
 void LCD_print_number(int num) {
 	int digits = digit_count(num);
 	char* str = (char*)malloc(digits * sizeof(char));
@@ -28,6 +31,7 @@ int digit_count(int num) {
 
 void LCD_clear(void) {
 	LCD_command(1);
+	printed_length=0;
 }
 
 /* Initialize port pins then initialize LCD controller */
@@ -96,6 +100,10 @@ void LCD_data(char data) {
 	GPIOB->BSRR = EN; /*pulse E high */
 	delayMs(0);
 	GPIOB->BSRR = EN << 16; /* clear E */
+	printed_length++;
+	if(printed_length == LCD_LENGTH) {
+		LCD_command(0xC0);
+	}
 }
 
 

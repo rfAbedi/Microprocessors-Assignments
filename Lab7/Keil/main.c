@@ -23,7 +23,8 @@ void LCD_print_KHPA(int n);
 void TIM2_IRQHandler(void);
 void EXTI15_10_IRQHandler(void);
 
-float freq = 0.5;
+float freq = 0.5; /* FREQUENCY OF LCD */
+int line=1; /* LINE OF TRIANGLE*/
 
 int main(void) {
 	LCD_init();
@@ -51,10 +52,8 @@ int main(void) {
 	__enable_irq();
 	NVIC_ConfigIRQ(EXTI15_10_IRQn, 0);
 
-	
+	NVIC_EnableIRQ(TIM2_IRQn); /* enable interrupt in NVIC */
 	while(1) {
-		__enable_irq();
-		/* __disable_irq(); /* global disable IRQs */
 		RCC->AHB1ENR |= 1; /* enable GPIOA clock */
 		GPIOA->MODER &= ~0x00000C00;
 		GPIOA->MODER |= 0x00000400;
@@ -64,24 +63,20 @@ int main(void) {
 		TIM2->ARR = 1000 / freq - 1; /* divided by 1000 */
 		TIM2->CR1 = 1; /* enable counter */
 		TIM2->DIER |= 1; /* enable UIE */
-		NVIC_EnableIRQ(TIM2_IRQn); /* enable interrupt in NVIC */
-		/* __enable_irq(); /* global enable IRQs */
 	}
 }
-
-int i=1;
 
 void TIM2_IRQHandler(void) {
 	TIM2->SR = 0; /* clear UIF */
 	LCD_clear();
-	LCD_print_KHPA(i);
-	i=(i+1)%9 == 0 ? 9:((i+1)%9);
+	LCD_print_KHPA(line);
+	line=(line+1)%9 == 0 ? 9:((line+1)%9);
 }
 
 void LCD_print_KHPA(int n) {
 	for (int i = 1; i <= n; i++) {
 		LCD_print_number(pascal(n, i));
-		LCD_print_string(" ");
+		LCD_print_string("\n");
 	}
 }
 

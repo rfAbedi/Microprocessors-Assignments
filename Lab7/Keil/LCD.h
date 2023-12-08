@@ -6,6 +6,7 @@
 #define RS 0x20 /* PB5 mask for reg select */
 #define RW 0x40 /* PB6 mask for read/write */
 #define EN 0x80 /* PB7 mask for enable */
+#define LCD_LENGTH 16 
 
 void delayMs(int n);
 void LCD_command(unsigned char command);
