@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "stm32f401xe.h": "c"
+        "stm32f401xe.h": "c",
+        "exti.h": "c"
     }
 }
