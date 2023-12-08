@@ -23,7 +23,7 @@ void LCD_print_KHPA(int n);
 void TIM2_IRQHandler(void);
 void EXTI15_10_IRQHandler(void);
 
-int Freq = 1000;
+float freq = 0.5;
 
 int main(void) {
 	LCD_init();
@@ -53,18 +53,19 @@ int main(void) {
 
 	
 	while(1) {
-		__disable_irq(); /* global disable IRQs */
+		__enable_irq();
+		/* __disable_irq(); /* global disable IRQs */
 		RCC->AHB1ENR |= 1; /* enable GPIOA clock */
 		GPIOA->MODER &= ~0x00000C00;
 		GPIOA->MODER |= 0x00000400;
 		/* setup TIM2 */
 		RCC->APB1ENR |= 1; /* enable TIM2 clock */
 		TIM2->PSC = 16000 - 1; /* divided by 16000 */
-		TIM2->ARR = Freq - 1; /* divided by 1000 */
+		TIM2->ARR = 1000 / freq - 1; /* divided by 1000 */
 		TIM2->CR1 = 1; /* enable counter */
 		TIM2->DIER |= 1; /* enable UIE */
 		NVIC_EnableIRQ(TIM2_IRQn); /* enable interrupt in NVIC */
-		__enable_irq(); /* global enable IRQs */
+		/* __enable_irq(); /* global enable IRQs */
 	}
 }
 
@@ -94,10 +95,13 @@ int pascal(int row, int col) {
 
 
 void EXTI15_10_IRQHandler(void) {
+	RCC->APB1ENR |= 0; /* disable TIM2 clock */
 	EXTI->PR |= EXTI_PR_PR13;
 	NVIC_ClearPendingIRQ(EXTI15_10_IRQn);
 	if(GPIO_ReadPin(C, 13) == 1) {
-		Freq = (Freq == 1000) ? 500 : 1000;
+		freq = (freq == 1) ? 0.5 : 1;
 	}
 	TIM2->SR = 0; /* clear UIF */
+	RCC->APB1ENR |= 1; /* enable TIM2 clock */
+
 }

@@ -35,49 +35,58 @@ main.c(18): warning: In file included from...
 ./GPIO.h(19): warning: // comments are not allowed in this language [-Wcomment]
 // Mode Types
 ^
-main.c(26): warning: no previous extern declaration for non-static variable 'Freq' [-Wmissing-variable-declarations]
-int Freq = 1000;
-    ^
+main.c(26): warning: no previous extern declaration for non-static variable 'freq' [-Wmissing-variable-declarations]
+float freq = 0.5;
+      ^
 main.c(26): note: declare 'static' if the variable is not intended to be used outside of this translation unit
-int Freq = 1000;
+float freq = 0.5;
 ^
 main.c(31): warning: // comments are not allowed in this language [-Wcomment]
         // Init SevenSegment
         ^
-main.c(58): warning: implicit conversion changes signedness: 'int' to 'unsigned int' [-Wsign-conversion]
+main.c(57): warning: '/*' within block comment [-Wcomment]
+                /* __disable_irq(); /* global disable IRQs */
+                                    ^
+main.c(59): warning: implicit conversion changes signedness: 'int' to 'unsigned int' [-Wsign-conversion]
                 GPIOA->MODER &= ~0x00000C00;
                              ~~ ^~~~~~~~~~~
-main.c(63): warning: implicit conversion changes signedness: 'int' to 'uint32_t' (aka 'unsigned int') [-Wsign-conversion]
-                TIM2->ARR = Freq - 1; /* divided by 1000 */
-                          ~ ~~~~~^~~
+main.c(64): warning: implicit conversion turns floating-point number into integer: 'float' to 'uint32_t' (aka 'unsigned int') [-Wfloat-conversion]
+                TIM2->ARR = 1000 / freq - 1; /* divided by 1000 */
+                          ~ ~~~~~~~~~~~~^~~
+main.c(68): warning: '/*' within block comment [-Wcomment]
+                /* __enable_irq(); /* global enable IRQs */
+                                   ^
 main.c(35): warning: mixing declarations and code is a C99 extension [-Wdeclaration-after-statement]
         char i;
              ^
-main.c(71): warning: no previous extern declaration for non-static variable 'i' [-Wmissing-variable-declarations]
+main.c(72): warning: no previous extern declaration for non-static variable 'i' [-Wmissing-variable-declarations]
 int i=1;
     ^
-main.c(71): note: declare 'static' if the variable is not intended to be used outside of this translation unit
+main.c(72): note: declare 'static' if the variable is not intended to be used outside of this translation unit
 int i=1;
 ^
-main.c(81): warning: variable declaration in for loop is a C99-specific feature [-Wc99-extensions]
+main.c(82): warning: variable declaration in for loop is a C99-specific feature [-Wc99-extensions]
         for (int i = 1; i <= n; i++) {
              ^
-main.c(81): warning: GCC does not allow variable declarations in for loop initializers before C99 [-Wgcc-compat]
-main.c(81): warning: declaration shadows a variable in the global scope [-Wshadow]
+main.c(82): warning: GCC does not allow variable declarations in for loop initializers before C99 [-Wgcc-compat]
+main.c(82): warning: declaration shadows a variable in the global scope [-Wshadow]
         for (int i = 1; i <= n; i++) {
                  ^
-main.c(71): note: previous declaration is here
+main.c(72): note: previous declaration is here
 int i=1;
     ^
-main.c(103): warning: no newline at end of file [-Wnewline-eof]
+main.c(102): warning: comparing floating point with == or != is unsafe [-Wfloat-equal]
+                freq = (freq == 1) ? 0.5 : 1;
+                        ~~~~ ^  ~
+main.c(107): warning: no newline at end of file [-Wnewline-eof]
 }
  ^
-12 warnings generated.
+15 warnings generated.
 compiling main.c...
 linking...
-Program Size: Code=9600 RO-data=996 RW-data=32 ZI-data=1632  
+Program Size: Code=9964 RO-data=996 RW-data=32 ZI-data=1632  
 FromELF: creating hex file...
-".\Objects\Lab7.axf" - 0 Error(s), 12 Warning(s).
+".\Objects\Lab7.axf" - 0 Error(s), 15 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -108,7 +117,7 @@ Package Vendor: Keil
       Source file:   Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f401xe.s
       Source file:   MDK/Device/Source/ARM/STM32F401xx_OPT.s
       Source file:   Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/system_stm32f4xx.c
-Build Time Elapsed:  00:00:00
+Build Time Elapsed:  00:00:01
 </pre>
 </body>
 </html>
