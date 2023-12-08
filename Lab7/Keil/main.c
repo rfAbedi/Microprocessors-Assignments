@@ -93,7 +93,7 @@ void EXTI15_10_IRQHandler(void) {
 	RCC->APB1ENR |= 0; /* disable TIM2 clock */
 	EXTI->PR |= EXTI_PR_PR13;
 	NVIC_ClearPendingIRQ(EXTI15_10_IRQn);
-	if(GPIO_ReadPin(C, 13) == 1) {
+	if(GPIO_ReadPin(C, 13) == 0) {
 		freq = (freq == 1) ? 0.5 : 1;
 	}
 	TIM2->SR = 0; /* clear UIF */
