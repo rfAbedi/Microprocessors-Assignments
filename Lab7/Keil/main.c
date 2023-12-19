@@ -76,7 +76,7 @@ void TIM2_IRQHandler(void) {
 void LCD_print_KHPA(int n) {
 	for (int i = 1; i <= n; i++) {
 		LCD_print_number(pascal(n, i));
-		LCD_print_string("\n");
+		LCD_print_string(" ");
 	}
 }
 

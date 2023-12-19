@@ -26,63 +26,7 @@ Project File Date:  12/09/2023
 
 <h2>Output:</h2>
 *** Using Compiler 'V6.19', folder: 'C:\Program Files\Keil_v5\ARM\ARMCLANG\Bin'
-Rebuild target 'Target 1'
-assembling startup_stm32f401xe.s...
-compiling EXTI.c...
-LCD.c(1): warning: In file included from...
-./LCD.h(24): warning: no newline at end of file [-Wnewline-eof]
-#endif /* INC_LCD_H_ */
-                       ^
-LCD.c(5): warning: no previous extern declaration for non-static variable 'printed_length' [-Wmissing-variable-declarations]
-int printed_length = 0;
-    ^
-LCD.c(5): note: declare 'static' if the variable is not intended to be used outside of this translation unit
-int printed_length = 0;
-^
-LCD.c(10): warning: implicitly declaring library function 'malloc' with type 'void *(unsigned int)' [-Wimplicit-function-declaration]
-        char* str = (char*)malloc(digits * sizeof(char));
-                           ^
-LCD.c(10): note: include the header <stdlib.h> or explicitly provide a declaration for 'malloc'
-LCD.c(10): warning: implicit conversion changes signedness: 'int' to 'unsigned int' [-Wsign-conversion]
-        char* str = (char*)malloc(digits * sizeof(char));
-                                  ^~~~~~ ~
-LCD.c(11): warning: implicitly declaring library function 'sprintf' with type 'int (char *, const char *, ...)' [-Wimplicit-function-declaration]
-        sprintf(str, "%d", num);
-        ^
-LCD.c(11): note: include the header <stdio.h> or explicitly provide a declaration for 'sprintf'
-LCD.c(16): warning: variable declaration in for loop is a C99-specific feature [-Wc99-extensions]
-        for(int i=0;; i++) {
-            ^
-LCD.c(16): warning: GCC does not allow variable declarations in for loop initializers before C99 [-Wgcc-compat]
-LCD.c(56): warning: implicit conversion changes signedness: 'int' to 'unsigned int' [-Wsign-conversion]
-        GPIOC->MODER &= ~0x0000FFFF; /* clear pin mode */
-                     ~~ ^~~~~~~~~~~
-LCD.c(63): warning: implicit conversion loses integer precision: 'volatile uint32_t' (aka 'volatile unsigned int') to 'char' [-Wimplicit-int-conversion]
-        status = GPIOC->IDR; /* read status register */
-               ~ ~~~~~~~^~~
-LCD.c(128): warning: implicit conversion changes signedness: 'int' to 'unsigned int' [-Wsign-conversion]
-        GPIOB->MODER &= ~0x0000FC00; /* clear pin mode */
-                     ~~ ^~~~~~~~~~~
-LCD.c(135): warning: implicit conversion changes signedness: 'int' to 'unsigned int' [-Wsign-conversion]
-        GPIOC->MODER &= ~0x0000FFFF; /* clear pin mode */
-                     ~~ ^~~~~~~~~~~
-11 warnings generated.
-compiling LCD.c...
-RTE/Device/STM32F401RETx/system_stm32f4xx.c(48): warning: In file included from...
-C:/Users/ROG/AppData/Local/Arm/Packs/Keil/STM32F4xx_DFP/2.16.0/Drivers/CMSIS/Device/ST/STM32F4xx/Include\stm32f4xx.h(11): warning: invalid UTF-8 in comment [-Winvalid-utf8]
-  *              - To use or not the peripheral<92>s drivers in application code(i.e. 
-                                               ^
-C:/Users/ROG/AppData/Local/Arm/Packs/Keil/STM32F4xx_DFP/2.16.0/Drivers/CMSIS/Device/ST/STM32F4xx/Include\stm32f4xx.h(12): warning: invalid UTF-8 in comment [-Winvalid-utf8]
-  *                code will be based on direct access to peripheral<92>s registers 
-                                                                    ^
-2 warnings generated.
-compiling system_stm32f4xx.c...
-GPIO.c(10): warning: In file included from...
-./GPIO.h(19): warning: // comments are not allowed in this language [-Wcomment]
-// Mode Types
-^
-1 warning generated.
-compiling GPIO.c...
+Build target 'Target 1'
 main.c(16): warning: In file included from...
 C:/Users/ROG/AppData/Local/Arm/Packs/Keil/STM32F4xx_DFP/2.16.0/Drivers/CMSIS/Device/ST/STM32F4xx/Include\stm32f4xx.h(11): warning: invalid UTF-8 in comment [-Winvalid-utf8]
   *              - To use or not the peripheral<92>s drivers in application code(i.e. 
@@ -137,7 +81,7 @@ compiling main.c...
 linking...
 Program Size: Code=10008 RO-data=996 RW-data=32 ZI-data=1640  
 FromELF: creating hex file...
-".\Objects\Lab7.axf" - 0 Error(s), 28 Warning(s).
+".\Objects\Lab7.axf" - 0 Error(s), 14 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -163,10 +107,10 @@ Package Vendor: Keil
    * Component: ARM::CMSIS:CORE:5.6.0
 
    * Component: Keil::Device:Startup:2.6.3
+      Source file:   MDK/Device/Source/ARM/STM32F4xx_OTP.s
       Source file:   MDK/Device/Source/ARM/STM32F401xx_OPT.s
       Source file:   Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f401xe.s
       Include file:  Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h
-      Source file:   MDK/Device/Source/ARM/STM32F4xx_OTP.s
       Source file:   Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/system_stm32f4xx.c
 Build Time Elapsed:  00:00:01
 </pre>
