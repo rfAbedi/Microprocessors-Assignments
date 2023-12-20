@@ -32,7 +32,7 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 #define PeriodTIM3		0xFFFF
-#define PeriodTIM2		0xFFFFFFFF
+#define PeriodTIM5		0xFFFFFFFF
 #define threshold			1000
 /* USER CODE END PD */
 
@@ -42,9 +42,9 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim3;
 TIM_HandleTypeDef htim4;
+TIM_HandleTypeDef htim5;
 
 /* USER CODE BEGIN PV */
 static const unsigned char sevenSegHex[10] = {0x3F, 0x06, 0x5B, 0x4F, 0x66,0x6D, 0x7D, 0x07, 0x7F, 0x6F};
@@ -61,9 +61,9 @@ int Is_First_Captured = 0;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
-static void MX_TIM2_Init(void);
 static void MX_TIM3_Init(void);
 static void MX_TIM4_Init(void);
+static void MX_TIM5_Init(void);
 /* USER CODE BEGIN PFP */
 int pascal(int row, int col);
 void shiftOut(unsigned char num);
@@ -73,7 +73,7 @@ void shiftOut(unsigned char num);
 /* USER CODE BEGIN 0 */
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 {
-	if ((htim->Instance == TIM3 && htim->Channel == HAL_TIM_ACTIVE_CHANNEL_3) || (htim->Instance == TIM2 && htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2))
+	if ((htim->Instance == TIM3 && htim->Channel == HAL_TIM_ACTIVE_CHANNEL_3) || (htim->Instance == TIM5 && htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2))
 	{
 		if (Is_First_Captured == 0) // if the first rising edge is not captured
 		{
@@ -92,7 +92,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 
 			else if (IC_Val1 > IC_Val2)
 			{
-				Difference = (((htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2) ? PeriodTIM2 : PeriodTIM3) - IC_Val1) + IC_Val2;
+				Difference = (((htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2) ? PeriodTIM5 : PeriodTIM3) - IC_Val1) + IC_Val2;
 			}
 			
 			if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2)
@@ -185,13 +185,12 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_TIM2_Init();
   MX_TIM3_Init();
   MX_TIM4_Init();
+  MX_TIM5_Init();
   /* USER CODE BEGIN 2 */
 	HAL_TIM_Base_Start_IT(&htim4);
-	HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_1);
-	HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_2);
+	HAL_TIM_IC_Start_IT(&htim5, TIM_CHANNEL_2);
 	HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_3);
   /* USER CODE END 2 */
 
@@ -245,64 +244,6 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-}
-
-/**
-  * @brief TIM2 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_TIM2_Init(void)
-{
-
-  /* USER CODE BEGIN TIM2_Init 0 */
-
-  /* USER CODE END TIM2_Init 0 */
-
-  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
-  TIM_MasterConfigTypeDef sMasterConfig = {0};
-  TIM_IC_InitTypeDef sConfigIC = {0};
-
-  /* USER CODE BEGIN TIM2_Init 1 */
-
-  /* USER CODE END TIM2_Init 1 */
-  htim2.Instance = TIM2;
-  htim2.Init.Prescaler = 16000-1;
-  htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 0xFFFFFFFF-1;
-  htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
-  if (HAL_TIM_ConfigClockSource(&htim2, &sClockSourceConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  if (HAL_TIM_IC_Init(&htim2) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
-  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-  if (HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sConfigIC.ICPolarity = TIM_INPUTCHANNELPOLARITY_BOTHEDGE;
-  sConfigIC.ICSelection = TIM_ICSELECTION_DIRECTTI;
-  sConfigIC.ICPrescaler = TIM_ICPSC_DIV1;
-  sConfigIC.ICFilter = 0;
-  if (HAL_TIM_IC_ConfigChannel(&htim2, &sConfigIC, TIM_CHANNEL_2) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN TIM2_Init 2 */
-
-  /* USER CODE END TIM2_Init 2 */
-
 }
 
 /**
@@ -405,6 +346,64 @@ static void MX_TIM4_Init(void)
   /* USER CODE BEGIN TIM4_Init 2 */
 
   /* USER CODE END TIM4_Init 2 */
+
+}
+
+/**
+  * @brief TIM5 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM5_Init(void)
+{
+
+  /* USER CODE BEGIN TIM5_Init 0 */
+
+  /* USER CODE END TIM5_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+  TIM_IC_InitTypeDef sConfigIC = {0};
+
+  /* USER CODE BEGIN TIM5_Init 1 */
+
+  /* USER CODE END TIM5_Init 1 */
+  htim5.Instance = TIM5;
+  htim5.Init.Prescaler = 16000-1;
+  htim5.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim5.Init.Period = 0xFFFFFFFF-1;
+  htim5.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim5.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim5) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim5, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_TIM_IC_Init(&htim5) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim5, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sConfigIC.ICPolarity = TIM_INPUTCHANNELPOLARITY_BOTHEDGE;
+  sConfigIC.ICSelection = TIM_ICSELECTION_DIRECTTI;
+  sConfigIC.ICPrescaler = TIM_ICPSC_DIV1;
+  sConfigIC.ICFilter = 0;
+  if (HAL_TIM_IC_ConfigChannel(&htim5, &sConfigIC, TIM_CHANNEL_2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM5_Init 2 */
+
+  /* USER CODE END TIM5_Init 2 */
 
 }
 
