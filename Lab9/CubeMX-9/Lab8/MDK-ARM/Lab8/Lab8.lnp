@@ -1,0 +1,25 @@
+--cpu=Cortex-M4.fp.sp
+"lab8\startup_stm32f411xe.o"
+"lab8\main.o"
+"lab8\stm32f4xx_it.o"
+"lab8\stm32f4xx_hal_msp.o"
+"lab8\stm32f4xx_hal_tim.o"
+"lab8\stm32f4xx_hal_tim_ex.o"
+"lab8\stm32f4xx_hal_rcc.o"
+"lab8\stm32f4xx_hal_rcc_ex.o"
+"lab8\stm32f4xx_hal_flash.o"
+"lab8\stm32f4xx_hal_flash_ex.o"
+"lab8\stm32f4xx_hal_flash_ramfunc.o"
+"lab8\stm32f4xx_hal_gpio.o"
+"lab8\stm32f4xx_hal_dma_ex.o"
+"lab8\stm32f4xx_hal_dma.o"
+"lab8\stm32f4xx_hal_pwr.o"
+"lab8\stm32f4xx_hal_pwr_ex.o"
+"lab8\stm32f4xx_hal_cortex.o"
+"lab8\stm32f4xx_hal.o"
+"lab8\stm32f4xx_hal_exti.o"
+"lab8\system_stm32f4xx.o"
+--strict --scatter "Lab8\Lab8.sct"
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list "Lab8.map" -o Lab8\Lab8.axf
