@@ -57,11 +57,13 @@ static const unsigned char digitHex[4] = {0xFE, 0xFD, 0xFB, 0xF7};
 volatile int N = 7;
 volatile int M = 5;
 
-int32_t IC_Val1 = 0;
-int32_t IC_Val2 = 0;
-uint32_t Difference = 0;
+volatile int32_t IC_Val1 = 0;
+volatile int32_t IC_Val2 = 0;
+volatile uint32_t Difference = 0;
 volatile uint32_t adc_value = 1000;
-int Is_First_Captured = 0;
+volatile uint8_t buzzer_flag = 0;
+volatile uint8_t buzzer_mode = -1;
+volatile int Is_First_Captured = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -106,23 +108,19 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 			
 			if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2)
 			{
-				if (!(N == 1 && (Difference >= threshold)))
+				if (!(N == 1 && (Difference >= threshold))) {
 					N += ((Difference < threshold) ? +1:-1);
-				
-					htim2.Instance->PSC = adc_value/2;
-					HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
-					HAL_Delay((Difference < threshold) ? 200:400);
-					HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_2);
+					buzzer_mode = ((Difference < threshold) ? 0:1);
+					buzzer_flag = 1;
+				}
 			}
 			else
 			{
-				if (!((M == N && (Difference < threshold)) || (M == 1 && (Difference >= threshold))))
+				if (!((M == N && (Difference < threshold)) || (M == 1 && (Difference >= threshold)))) {
 					M += ((Difference < threshold) ? +1:-1);
-				
-					htim2.Instance->PSC = adc_value;
-					HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
-					HAL_Delay((Difference < threshold) ? 200:400);
-					HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_2);
+					buzzer_mode = ((Difference < threshold) ? 2:3);
+					buzzer_flag = 1;
+				}
 			}
 
 	 		__HAL_TIM_SET_COUNTER(htim, 0);  // reset the counter
@@ -247,6 +245,48 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+		if(buzzer_flag == 1) {
+			adc_value = 1000; //for test
+			switch(buzzer_mode) {
+				case 0:
+				{
+						htim2.Instance->PSC = adc_value/2;
+						HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
+						HAL_Delay(200);
+						HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_2);
+					break;
+				}
+				case 1:
+				{
+						htim2.Instance->PSC = adc_value/2;
+						HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
+						HAL_Delay(400);
+						HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_2);
+					break;
+				}
+				case 2:
+				{
+						htim2.Instance->PSC = adc_value;
+						HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
+						HAL_Delay(200);
+						HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_2);
+					break;
+				}
+				case 3:
+				{
+						htim2.Instance->PSC = adc_value;
+						HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
+						HAL_Delay(400);
+						HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_2);
+					break;
+				}
+				defualt:
+					break;
+			}
+			buzzer_flag = 0;
+		}
+
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -467,7 +507,7 @@ static void MX_TIM2_Init(void)
     Error_Handler();
   }
   sConfigOC.OCMode = TIM_OCMODE_PWM1;
-  sConfigOC.Pulse = 8000;
+  sConfigOC.Pulse = 0;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
   if (HAL_TIM_PWM_ConfigChannel(&htim2, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
