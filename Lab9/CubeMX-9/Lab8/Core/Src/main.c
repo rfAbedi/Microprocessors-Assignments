@@ -117,7 +117,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 			
 			if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2)
 			{
-				if (!(N == 1 && (Difference >= threshold))) {
+				if (!(N == 1 && (Difference >= threshold)))
 					N += ((Difference < threshold) ? +1:-1);
 					
 				if(adc_value != -1) {
@@ -129,7 +129,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 			}
 			else
 			{
-				if (!((M == N && (Difference < threshold)) || (M == 1 && (Difference >= threshold)))) {
+				if (!((M == N && (Difference < threshold)) || (M == 1 && (Difference >= threshold))))
 					M += ((Difference < threshold) ? +1:-1);
 				
 					htim2.Instance->PSC = adc_value;
@@ -449,7 +449,7 @@ static void MX_TIM2_Init(void)
     Error_Handler();
   }
   sConfigOC.OCMode = TIM_OCMODE_PWM1;
-  sConfigOC.Pulse = 0;
+  sConfigOC.Pulse = 8000;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
   if (HAL_TIM_PWM_ConfigChannel(&htim2, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
