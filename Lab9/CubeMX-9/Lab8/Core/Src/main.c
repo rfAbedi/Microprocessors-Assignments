@@ -59,11 +59,14 @@ volatile int M = 5;
 int32_t IC_Val1 = 0;
 int32_t IC_Val2 = 0;
 uint32_t Difference = 0;
-volatile uint32_t adc_value = 1000;
+volatile uint32_t adc_value = -1;
 int Is_First_Captured = 0;
 volatile int buzzer_flag = 1;
-volatile int buzzer_mode = 0;
-int ctr = 0;
+volatile int adc_delay_mode = 0;
+volatile int ctr = 0;
+volatile int adc_ctr = 0;
+volatile int pressed_buttons_cnt = 0; // counter
+volatile int two_buttons_pressed = 0; // flag
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -77,6 +80,9 @@ static void MX_ADC1_Init(void);
 /* USER CODE BEGIN PFP */
 int pascal(int row, int col);
 void shiftOut(unsigned char num);
+void lcd_show_number(int num);
+int cal_buzzer_freq(void);
+uint32_t readADC(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -89,9 +95,13 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 		{
 			IC_Val1 = HAL_TIM_ReadCapturedValue(htim, ((htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2) ? TIM_CHANNEL_2 : TIM_CHANNEL_3)); // read the first value
 			Is_First_Captured = 1;  // set the first captured as true
+			pressed_buttons_cnt++;
+			if(pressed_buttons_cnt == 2) {
+				two_buttons_pressed = 1;
+			}
 		}
 
-		else   // If the first rising edge is captured, now we will capture the second edge
+		else if(two_buttons_pressed == 0) // If the first rising edge is captured, now we will capture the second edge
 		{
 			IC_Val2 = HAL_TIM_ReadCapturedValue(htim, ((htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2) ? TIM_CHANNEL_2 : TIM_CHANNEL_3));  // read second value
 
@@ -109,29 +119,40 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 			{
 				if (!(N == 1 && (Difference >= threshold)))
 					N += ((Difference < threshold) ? +1:-1);
-				
+					
+				if(adc_value != -1) {
 					htim2.Instance->PSC = adc_value/2;
 					HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
+					adc_delay_mode = (Difference < threshold) ? 1:20;
 					buzzer_flag = 1;
-					//HAL_Delay((Difference < threshold) ? 200:400);
-					//HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_2);
+				}
 			}
 			else
 			{
 				if (!((M == N && (Difference < threshold)) || (M == 1 && (Difference >= threshold))))
 					M += ((Difference < threshold) ? +1:-1);
 				
-					//htim2.Instance->PSC = adc_value;
-					//HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
-					//HAL_Delay((Difference < threshold) ? 200:400);
-					//HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_2);
+					htim2.Instance->PSC = adc_value;
+					HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
+					adc_delay_mode = (Difference < threshold) ? 1:2;
+					buzzer_flag = 1;
 			}
 
 	 		__HAL_TIM_SET_COUNTER(htim, 0);  // reset the counter
 			Is_First_Captured = 0; // set it back to false
 		}
+		else
+		{
+			pressed_buttons_cnt--;
+			if(pressed_buttons_cnt == 0) {
+				two_buttons_pressed = 0; // set flag FALSE
+			}
+			__HAL_TIM_SET_COUNTER(htim, 0);  // reset the counter
+			Is_First_Captured = 0;
+		}
 	}
 }
+
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
@@ -139,31 +160,54 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	{
 		if (buzzer_flag == 1) {
 			ctr +=1;
-			if (ctr == 20000)
+			if (ctr == adc_delay_mode * 2e5) // TODO: 2e5
 			{
 				HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_2);
 				ctr = 0;
 			}
 		}
 		
-		int pasc = pascal(N, M);
-		int digits[4] = {(pasc / 1000) % 10, (pasc / 100) % 10, (pasc / 10) % 10, pasc % 10};
-		int first_write = 0;
-		
-		for(int i = 0; i < 4; i++)
-		{
-			if ((first_write == 0) && (digits[i] == 0))
-				continue;
-			
-			first_write = 1;
-			
-			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_RESET);
-			shiftOut(sevenSegHex[digits[i]]);
-			shiftOut(digitHex[i]);
-			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_SET);
+		adc_ctr += 1;
+		if(adc_ctr == 1e3) { // TODO: 1e5
+			adc_value = readADC();
+			htim2.Instance->PSC = adc_value;
+			adc_ctr = 0;
+		}
+				
+		if(two_buttons_pressed == 1) {
+			int buzzer_freq = cal_buzzer_freq();
+			lcd_show_number((buzzer_freq < 1 ? 0:buzzer_freq)%10000);
+		}
+		else {
+			lcd_show_number(pascal(N, M));
 		}
 	}
 }
+
+int cal_buzzer_freq(void) {
+	return 16e6 / ((htim2.Instance->PSC + 1) * (htim2.Instance->ARR + 1));
+}
+
+void lcd_show_number(int num) {
+	int digits[4] = {(num / 1000) % 10, (num / 100) % 10, (num / 10) % 10, num % 10};
+	int first_write = 0;
+	
+	for(int i = 0; i < 4; i++)
+	{
+		if ((first_write == 0) && (digits[i] == 0))
+			continue;
+		
+		first_write = 1;
+		
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_RESET);
+		shiftOut(sevenSegHex[digits[i]]);
+		shiftOut(digitHex[i]);
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_SET);
+	}
+}
+
+
+
 
 void shiftOut(unsigned char num)
 {
@@ -179,6 +223,7 @@ void shiftOut(unsigned char num)
 		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
 	}
 }
+
 int pascal(int row, int col)
 {
 	if (col == 1 || row == col)
@@ -198,17 +243,17 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 // Read the ADC value
 uint32_t readADC(void)
 {
-// Start the ADC conversion
-HAL_ADC_Start(&hadc1);
+	// Start the ADC conversion
+	HAL_ADC_Start(&hadc1);
 
-// Wait for the conversion to complete
-HAL_ADC_PollForConversion(&hadc1, 1000);
+	// Wait for the conversion to complete
+	HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
 
-// Get the converted value
-uint32_t value = HAL_ADC_GetValue(&hadc1);
+	// Get the converted value
+	uint32_t value = HAL_ADC_GetValue(&hadc1);
 
-// Return the value
-return value;
+	// Return the value
+	return value;
 }
 
 /* USER CODE END 0 */
@@ -250,13 +295,15 @@ int main(void)
 	HAL_TIM_Base_Start_IT(&htim4);
 	HAL_TIM_IC_Start_IT(&htim5, TIM_CHANNEL_2);
 	HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_3);
-	HAL_ADC_Start_IT(&hadc1);
+	//HAL_ADC_Start_IT(&hadc1);
+	//HAL_ADC_Start(&hadc1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -327,12 +374,12 @@ static void MX_ADC1_Init(void)
   */
   hadc1.Instance = ADC1;
   hadc1.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV2;
-  hadc1.Init.Resolution = ADC_RESOLUTION_12B;
+  hadc1.Init.Resolution = ADC_RESOLUTION_8B;
   hadc1.Init.ScanConvMode = DISABLE;
   hadc1.Init.ContinuousConvMode = DISABLE;
   hadc1.Init.DiscontinuousConvMode = DISABLE;
-  hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_RISING;
-  hadc1.Init.ExternalTrigConv = ADC_EXTERNALTRIGCONV_T1_CC3;
+  hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+  hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
   hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
   hadc1.Init.NbrOfConversion = 1;
   hadc1.Init.DMAContinuousRequests = DISABLE;
@@ -377,9 +424,9 @@ static void MX_TIM2_Init(void)
 
   /* USER CODE END TIM2_Init 1 */
   htim2.Instance = TIM2;
-  htim2.Init.Prescaler = 1000-1;
+  htim2.Init.Prescaler = 10000-1;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 16000-1;
+  htim2.Init.Period = 1600-1;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
