@@ -64,7 +64,7 @@ Section Cross References
     main.o(.ARM.exidx.text.shiftOut) refers to main.o(.text.shiftOut) for [Anonymous Symbol]
     main.o(.text.HAL_ADC_ConvCpltCallback) refers to stm32f4xx_hal_adc.o(.text.HAL_ADC_GetValue) for HAL_ADC_GetValue
     main.o(.text.HAL_ADC_ConvCpltCallback) refers to main.o(.data..L_MergedGlobals) for .L_MergedGlobals
-    main.o(.text.HAL_ADC_ConvCpltCallback) refers to main.o(.bss..L_MergedGlobals.1) for .L_MergedGlobals.1
+    main.o(.text.HAL_ADC_ConvCpltCallback) refers to main.o(.bss.hadc1) for hadc1
     main.o(.text.HAL_ADC_ConvCpltCallback) refers to stm32f4xx_hal_adc.o(.text.HAL_ADC_Start_IT) for HAL_ADC_Start_IT
     main.o(.ARM.exidx.text.HAL_ADC_ConvCpltCallback) refers to main.o(.text.HAL_ADC_ConvCpltCallback) for [Anonymous Symbol]
     main.o(.text.main) refers to stm32f4xx_hal.o(.text.HAL_Init) for HAL_Init
@@ -85,7 +85,7 @@ Section Cross References
     main.o(.text.main) refers to main.o(.bss.htim5) for htim5
     main.o(.text.main) refers to main.o(.bss..L_MergedGlobals.1) for .L_MergedGlobals.1
     main.o(.text.main) refers to stm32f4xx_hal_msp.o(.text.HAL_TIM_MspPostInit) for HAL_TIM_MspPostInit
-    main.o(.text.main) refers to main.o(.bss..L_MergedGlobals.1) for .L_MergedGlobals.1
+    main.o(.text.main) refers to main.o(.bss.hadc1) for hadc1
     main.o(.text.main) refers to stm32f4xx_hal_adc.o(.text.HAL_ADC_Init) for HAL_ADC_Init
     main.o(.text.main) refers to stm32f4xx_hal_adc.o(.text.HAL_ADC_ConfigChannel) for HAL_ADC_ConfigChannel
     main.o(.text.main) refers to stm32f4xx_hal_tim.o(.text.HAL_TIM_Base_Start_IT) for HAL_TIM_Base_Start_IT
@@ -853,7 +853,7 @@ Removing Unused input sections from the image.
     Removing main.o(.ARM.exidx.text.lcd_show_number), (8 bytes).
     Removing main.o(.ARM.exidx.text.pascal), (8 bytes).
     Removing main.o(.ARM.exidx.text.shiftOut), (8 bytes).
-    Removing main.o(.text.HAL_ADC_ConvCpltCallback), (36 bytes).
+    Removing main.o(.text.HAL_ADC_ConvCpltCallback), (34 bytes).
     Removing main.o(.ARM.exidx.text.HAL_ADC_ConvCpltCallback), (8 bytes).
     Removing main.o(.ARM.exidx.text.main), (8 bytes).
     Removing main.o(.text.SystemClock_Config), (144 bytes).
@@ -1217,6 +1217,7 @@ Removing Unused input sections from the image.
     Removing stm32f4xx_hal.o(.ARM.exidx.text.HAL_SetTickFreq), (8 bytes).
     Removing stm32f4xx_hal.o(.text.HAL_GetTickFreq), (12 bytes).
     Removing stm32f4xx_hal.o(.ARM.exidx.text.HAL_GetTickFreq), (8 bytes).
+    Removing stm32f4xx_hal.o(.text.HAL_Delay), (40 bytes).
     Removing stm32f4xx_hal.o(.ARM.exidx.text.HAL_Delay), (8 bytes).
     Removing stm32f4xx_hal.o(.text.HAL_SuspendTick), (18 bytes).
     Removing stm32f4xx_hal.o(.ARM.exidx.text.HAL_SuspendTick), (8 bytes).
@@ -1941,6 +1942,7 @@ Image Symbol Table
     SPI5_IRQHandler                          0x08000253   Thumb Code     0  startup_stm32f411xe.o(.text)
     TAMP_STAMP_IRQHandler                    0x08000253   Thumb Code     0  startup_stm32f411xe.o(.text)
     TIM1_BRK_TIM9_IRQHandler                 0x08000253   Thumb Code     0  startup_stm32f411xe.o(.text)
+    TIM1_CC_IRQHandler                       0x08000253   Thumb Code     0  startup_stm32f411xe.o(.text)
     TIM1_TRG_COM_TIM11_IRQHandler            0x08000253   Thumb Code     0  startup_stm32f411xe.o(.text)
     TIM1_UP_TIM10_IRQHandler                 0x08000253   Thumb Code     0  startup_stm32f411xe.o(.text)
     USART1_IRQHandler                        0x08000253   Thumb Code     0  startup_stm32f411xe.o(.text)
