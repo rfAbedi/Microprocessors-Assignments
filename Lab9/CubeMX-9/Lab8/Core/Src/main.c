@@ -138,6 +138,10 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 					buzzer_flag = 1;
 			}
 
+			pressed_buttons_cnt--;
+			if(pressed_buttons_cnt == 0) {
+				two_buttons_pressed = 0; // set flag FALSE
+			}
 	 		__HAL_TIM_SET_COUNTER(htim, 0);  // reset the counter
 			Is_First_Captured = 0; // set it back to false
 		}
