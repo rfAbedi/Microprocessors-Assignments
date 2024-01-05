@@ -56,12 +56,13 @@ static const unsigned char digitHex[4] = {0xFE, 0xFD, 0xFB, 0xF7};
 volatile int N = 7;
 volatile int M = 5;
 
-int32_t IC_Val1 = 0;
-int32_t IC_Val2 = 0;
+volatile int32_t IC_Val1 = 0;
+volatile int32_t IC_Val2 = 0;
 uint32_t Difference = 0;
 volatile uint32_t adc_value = -1;
-int Is_First_Captured = 0;
-volatile int buzzer_flag = 1;
+volatile int Is_First_Captured1 = 0;
+volatile int Is_First_Captured2 = 0;
+volatile int buzzer_flag = 0;
 volatile int adc_delay_mode = 0;
 volatile int ctr = 0;
 volatile int adc_ctr = 0;
@@ -89,71 +90,147 @@ uint32_t readADC(void);
 /* USER CODE BEGIN 0 */
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 {
-	if ((htim->Instance == TIM3 && htim->Channel == HAL_TIM_ACTIVE_CHANNEL_3) || (htim->Instance == TIM5 && htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2))
+	if ((htim->Instance == TIM3 && htim->Channel == HAL_TIM_ACTIVE_CHANNEL_3))
 	{
-		if (Is_First_Captured == 0) // if the first rising edge is not captured
+		if (Is_First_Captured1 == 0) // if the first rising edge is not captured
 		{
 			IC_Val1 = HAL_TIM_ReadCapturedValue(htim, ((htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2) ? TIM_CHANNEL_2 : TIM_CHANNEL_3)); // read the first value
-			Is_First_Captured = 1;  // set the first captured as true
-			pressed_buttons_cnt++;
+			Is_First_Captured1 = 1;  // set the first captured as true
+			pressed_buttons_cnt+=1;
 			if(pressed_buttons_cnt == 2) {
 				two_buttons_pressed = 1;
 			}
 		}
 
-		else if(two_buttons_pressed == 0) // If the first rising edge is captured, now we will capture the second edge
+		else //if(two_buttons_pressed == 0 && pressed_buttons_cnt == 1) // If the first rising edge is captured, now we will capture the second edge
 		{
-			IC_Val2 = HAL_TIM_ReadCapturedValue(htim, ((htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2) ? TIM_CHANNEL_2 : TIM_CHANNEL_3));  // read second value
+			if(!(Is_First_Captured1 == 1 && Is_First_Captured2 == 1 && two_buttons_pressed == 1)) {
+				IC_Val2 = HAL_TIM_ReadCapturedValue(htim, ((htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2) ? TIM_CHANNEL_2 : TIM_CHANNEL_3));  // read second value
 
-			if (IC_Val2 > IC_Val1)
-			{
-				Difference = IC_Val2 - IC_Val1;
-			}
+				if (IC_Val2 > IC_Val1)
+				{
+					Difference = IC_Val2 - IC_Val1;
+				}
 
-			else if (IC_Val1 > IC_Val2)
-			{
-				Difference = (((htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2) ? PeriodTIM5 : PeriodTIM3) - IC_Val1) + IC_Val2;
-			}
-			
-			if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2)
-			{
-				if (!(N == 1 && (Difference >= threshold)))
-					N += ((Difference < threshold) ? +1:-1);
-					
-				if(adc_value != -1) {
-					htim2.Instance->PSC = adc_value/2;
-					HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
-					adc_delay_mode = (Difference < threshold) ? 1:20;
-					buzzer_flag = 1;
+				else if (IC_Val1 > IC_Val2)
+				{
+					Difference = (((htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2) ? PeriodTIM5 : PeriodTIM3) - IC_Val1) + IC_Val2;
+				}
+				
+				if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2)
+				{
+					if (!(N == 1 && (Difference >= threshold))) {
+						N += ((Difference < threshold) ? +1:-1);
+						
+						if(adc_value != -1) {
+							htim2.Instance->PSC = adc_value/2;
+							adc_delay_mode = ((Difference < threshold) ? 1:2);
+							buzzer_flag = 1;
+							HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
+						}
+					}
+				}
+				else if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_3)
+				{
+					if (!((M == N && (Difference < threshold)) || (M == 1 && (Difference >= threshold)))) {
+						M += ((Difference < threshold) ? +1:-1);
+						htim2.Instance->PSC = adc_value;
+						adc_delay_mode = ((Difference < threshold) ? 1:2);
+						buzzer_flag = 1;
+						HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
+					}
 				}
 			}
-			else
-			{
-				if (!((M == N && (Difference < threshold)) || (M == 1 && (Difference >= threshold))))
-					M += ((Difference < threshold) ? +1:-1);
-				
-					htim2.Instance->PSC = adc_value;
-					HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
-					adc_delay_mode = (Difference < threshold) ? 1:2;
-					buzzer_flag = 1;
-			}
-
-			pressed_buttons_cnt--;
+			if(pressed_buttons_cnt > 0)
+				pressed_buttons_cnt-=1;
 			if(pressed_buttons_cnt == 0) {
 				two_buttons_pressed = 0; // set flag FALSE
 			}
 	 		__HAL_TIM_SET_COUNTER(htim, 0);  // reset the counter
-			Is_First_Captured = 0; // set it back to false
+			Is_First_Captured1 = 0; // set it back to false
 		}
-		else
+//		else
+//		{
+//			if(pressed_buttons_cnt > 0)
+//				pressed_buttons_cnt-=1;
+//			if(pressed_buttons_cnt == 0) {
+//				two_buttons_pressed = 0; // set flag FALSE
+//			}
+//			__HAL_TIM_SET_COUNTER(htim, 0);  // reset the counter
+//			Is_First_Captured1 = 0;
+//		}
+	}
+	
+	if ((htim->Instance == TIM5 && htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2))
+	{
+		if (Is_First_Captured2 == 0) // if the first rising edge is not captured
 		{
-			pressed_buttons_cnt--;
+			IC_Val1 = HAL_TIM_ReadCapturedValue(htim, ((htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2) ? TIM_CHANNEL_2 : TIM_CHANNEL_3)); // read the first value
+			Is_First_Captured2 = 1;  // set the first captured as true
+			pressed_buttons_cnt+=1;
+			if(pressed_buttons_cnt == 2) {
+				two_buttons_pressed = 1;
+			}
+		}
+
+		else //if(two_buttons_pressed == 0 && pressed_buttons_cnt == 1) // If the first rising edge is captured, now we will capture the second edge
+		{
+			if(!(Is_First_Captured1 == 1 && Is_First_Captured2 == 1) && two_buttons_pressed == 1) {
+				IC_Val2 = HAL_TIM_ReadCapturedValue(htim, ((htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2) ? TIM_CHANNEL_2 : TIM_CHANNEL_3));  // read second value
+
+				if (IC_Val2 > IC_Val1)
+				{
+					Difference = IC_Val2 - IC_Val1;
+				}
+
+				else if (IC_Val1 > IC_Val2)
+				{
+					Difference = (((htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2) ? PeriodTIM5 : PeriodTIM3) - IC_Val1) + IC_Val2;
+				}
+				
+				if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2)
+				{
+					if (!(N == 1 && (Difference >= threshold))){
+						N += ((Difference < threshold) ? +1:-1);
+						
+						if(adc_value != -1) {
+							htim2.Instance->PSC = adc_value/2;
+							adc_delay_mode = ((Difference < threshold) ? 1:2);
+							buzzer_flag = 1;
+							HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
+						}
+					}
+				}
+				else if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_3)
+				{
+					if (!((M == N && (Difference < threshold)) || (M == 1 && (Difference >= threshold)))) {
+						M += ((Difference < threshold) ? +1:-1);
+					
+						htim2.Instance->PSC = adc_value;
+						adc_delay_mode = ((Difference < threshold) ? 1:2);
+						buzzer_flag = 1;
+						HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
+					}
+				}
+			}
+			if(pressed_buttons_cnt > 0)
+				pressed_buttons_cnt-=1;
 			if(pressed_buttons_cnt == 0) {
 				two_buttons_pressed = 0; // set flag FALSE
 			}
-			__HAL_TIM_SET_COUNTER(htim, 0);  // reset the counter
-			Is_First_Captured = 0;
+	 		__HAL_TIM_SET_COUNTER(htim, 0);  // reset the counter
+			Is_First_Captured2 = 0; // set it back to false
 		}
+//		else
+//		{
+//			if(pressed_buttons_cnt > 0)
+//				pressed_buttons_cnt-=1;
+//			if(pressed_buttons_cnt == 0) {
+//				two_buttons_pressed = 0; // set flag FALSE
+//			}
+//			__HAL_TIM_SET_COUNTER(htim, 0);  // reset the counter
+//			Is_First_Captured2 = 0;
+//		}
 	}
 }
 
@@ -164,21 +241,23 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	{
 		if (buzzer_flag == 1) {
 			ctr +=1;
-			if (ctr == adc_delay_mode * 2e5) // TODO: 2e5
+			if (ctr >= (adc_delay_mode==1 ? 1 * 2e3 : 2 * 2e3)) // TODO: 2e5
 			{
 				HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_2);
 				ctr = 0;
+				buzzer_flag = 0;
 			}
 		}
 		
 		adc_ctr += 1;
-		if(adc_ctr == 1e3) { // TODO: 1e5
+		if(adc_ctr >= 1e3) { // TODO: 1e5 // Test = 1e3
 			adc_value = readADC();
 			htim2.Instance->PSC = adc_value;
 			adc_ctr = 0;
 		}
-				
-		if(two_buttons_pressed == 1) {
+		
+		//lcd_show_number(1 + Is_First_Captured1 + Is_First_Captured2);
+		if(two_buttons_pressed == 1 || pressed_buttons_cnt == 2) {
 			int buzzer_freq = cal_buzzer_freq();
 			lcd_show_number((buzzer_freq < 1 ? 0:buzzer_freq)%10000);
 		}
@@ -188,9 +267,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	}
 }
 
+
 int cal_buzzer_freq(void) {
 	return 16e6 / ((htim2.Instance->PSC + 1) * (htim2.Instance->ARR + 1));
 }
+
 
 void lcd_show_number(int num) {
 	int digits[4] = {(num / 1000) % 10, (num / 100) % 10, (num / 10) % 10, num % 10};
