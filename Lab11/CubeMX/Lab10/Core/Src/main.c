@@ -49,6 +49,7 @@
 /* Private variables ---------------------------------------------------------*/
 SPI_HandleTypeDef hspi1;
 
+TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim2;
 
 UART_HandleTypeDef huart1;
@@ -71,6 +72,7 @@ static void MX_TIM2_Init(void);
 static void MX_SPI1_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_USART2_UART_Init(void);
+static void MX_TIM1_Init(void);
 /* USER CODE BEGIN PFP */
 int pascal(int row, int col);
 int atoi(char* str);
@@ -170,45 +172,42 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	if (htim->Instance == TIM2)
 	{
-		TIM2_cnt++;
-		MAX7219_displayPascal();
-		
-		if(TIM2_cnt == 2) {
-			if (row <= N)
+		if (row <= N)
+		{
+			indent(N - row);
+			
+			for (int i = 1; i <= row; i++) // Origin: i = 1
 			{
-				indent(N - row);
+				int num = pascal(row, i);
+				char str[10];
+				itoa(num, str);
 				
-				for (int i = 1; i <= row; i++) // Origin: i = 1
-				{
-					int num = pascal(row, i);
-					char str[10];
-					itoa(num, str);
-					
-					string_to_buffer(str);
-					char_to_buffer(' ');
-				}
+				string_to_buffer(str);
+				char_to_buffer(' ');
+			}
+			char_to_buffer('\r');
+			char_to_buffer('\n');
+
+			HAL_UART_Transmit_IT(&huart1, write_buffer, write_buffer_tail);
+
+			
+			if (++row > N)
+			{
 				char_to_buffer('\r');
 				char_to_buffer('\n');
-
+				char str[] = "Enter N: \0";
+				string_to_buffer(str);
 				HAL_UART_Transmit_IT(&huart1, write_buffer, write_buffer_tail);
-
 				
-				if (++row > N)
-				{
-					char_to_buffer('\r');
-					char_to_buffer('\n');
-					char str[] = "Enter N: \0";
-					string_to_buffer(str);
-					HAL_UART_Transmit_IT(&huart1, write_buffer, write_buffer_tail);
-					
-					HAL_UART_Receive_IT (&huart1, Rx_data, 1);
+				HAL_UART_Receive_IT (&huart1, Rx_data, 1);
 
-					row = 1;
-					N = 0;
-				}
+				row = 1;
+				N = 0;
 			}
-			TIM2_cnt = 0;
 		}
+	}
+	else if(htim->Instance == TIM1) {
+		MAX7219_displayPascal();
 	}
 }
 
@@ -342,6 +341,7 @@ int main(void)
   MX_SPI1_Init();
   MX_USART1_UART_Init();
   MX_USART2_UART_Init();
+  MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
 	MAX7219_Init();
   char str[] = "Enter N: \0";
@@ -350,6 +350,7 @@ int main(void)
 
 	HAL_UART_Receive_IT (&huart1, Rx_data, 1);
 	HAL_TIM_Base_Start_IT(&htim2);
+	HAL_TIM_Base_Start_IT(&htim1);
 	
   /* USER CODE END 2 */
 
@@ -444,6 +445,52 @@ static void MX_SPI1_Init(void)
 }
 
 /**
+  * @brief TIM1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM1_Init(void)
+{
+
+  /* USER CODE BEGIN TIM1_Init 0 */
+
+  /* USER CODE END TIM1_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM1_Init 1 */
+
+  /* USER CODE END TIM1_Init 1 */
+  htim1.Instance = TIM1;
+  htim1.Init.Prescaler = 16000-1;
+  htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim1.Init.Period = 500-1;
+  htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim1.Init.RepetitionCounter = 0;
+  htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim1, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim1, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM1_Init 2 */
+
+  /* USER CODE END TIM1_Init 2 */
+
+}
+
+/**
   * @brief TIM2 Initialization Function
   * @param None
   * @retval None
@@ -464,7 +511,7 @@ static void MX_TIM2_Init(void)
   htim2.Instance = TIM2;
   htim2.Init.Prescaler = 16000-1;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 500-1;
+  htim2.Init.Period = 1000-1;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
