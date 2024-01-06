@@ -31,7 +31,14 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+/* MAX7219 Registers */
+#define MAX7219_REG_NOOP        0x00
+#define MAX7219_REG_DIGIT0      0x01
+#define MAX7219_REG_DECODEMODE  0x09
+#define MAX7219_REG_INTENSITY   0x0A
+#define MAX7219_REG_SCANLIMIT   0x0B
+#define MAX7219_REG_SHUTDOWN    0x0C
+#define MAX7219_REG_DISPLAYTEST 0x0F
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -40,6 +47,8 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+SPI_HandleTypeDef hspi1;
+
 TIM_HandleTypeDef htim2;
 
 UART_HandleTypeDef huart1;
@@ -58,7 +67,9 @@ int row = 1;
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_TIM2_Init(void);
+static void MX_SPI1_Init(void);
 static void MX_USART1_UART_Init(void);
+void MAX7219_ClearAllDigits();
 /* USER CODE BEGIN PFP */
 int pascal(int row, int col);
 int atoi(char* str);
@@ -67,10 +78,16 @@ int intlen(int num);
 void string_to_buffer(char* str);
 void char_to_buffer(char c);
 void indent(int num);
+void MAX7219_DisplayNumber(uint8_t digit, uint8_t value);
+void MAX7219_Init();
+void MAX7219_Write(uint8_t reg, uint8_t data);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+int pascal_output[30], pcnt, pascal_output_flag = 0, pointer;
+
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) 
 {
   if (Rx_data[0] != '\r')
@@ -84,6 +101,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     N_str[N_str_tail] = '\0';
     N_str_tail = 0;
     N = atoi(N_str);
+		pascal_output_flag = 0;
+		
 
     char_to_buffer('\r');
     char_to_buffer('\n');
@@ -96,43 +115,96 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
   write_buffer_tail = 0;
 }
 
+
+
+void MAX7219_displayPascal() {
+	if(N == 0) return;
+	int r = N;
+	
+	if(pascal_output_flag == 0) {	
+		pcnt = 0;
+		pointer = 0;
+		
+		for(; pcnt<8; pcnt++) {
+			pascal_output[pcnt] = 0x0F;
+		}
+		
+		for(int i=1; i<=r; i++) {
+			int num = pascal(r, i), d=0;
+			int digits[10];
+			while(num > 0) {
+				digits[d] = num%10;
+				d++;
+				num /= 10;
+			}
+			for(int i=d-1; i>=0; i--) {
+				pascal_output[pcnt] = digits[i];
+				pcnt++;
+			}
+			pascal_output[pcnt] = 0x0F;
+			pcnt++;
+		}
+		pascal_output_flag = 1;
+	}
+	
+	int k = pointer;
+	for(int i=0; i<8; i++) {
+		if(k >= pcnt) {
+			k = 0;
+		}
+		MAX7219_DisplayNumber(i, pascal_output[k]);
+		k++;
+	}
+	pointer++;
+	if(pointer>=pcnt) {
+		pointer = 0;
+	}
+}
+
+
+volatile int TIM2_cnt = 0, display_flag = 0;
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	if (htim->Instance == TIM2)
 	{
-    if (row <= N)
-    {
-      indent(N - row);
-      
-      for (int i = 1; i <= row; i++)
-      {
-        int num = pascal(row, i);
+		TIM2_cnt++;
+		MAX7219_displayPascal();
+		
+		if(TIM2_cnt == 2) {
+			if (row <= N)
+			{
+				indent(N - row);
+				
+				for (int i = 1; i <= row; i++) // Origin: i = 1
+				{
+					int num = pascal(row, i);
+					char str[10];
+					itoa(num, str);
+					
+					string_to_buffer(str);
+					char_to_buffer(' ');
+				}
+				char_to_buffer('\r');
+				char_to_buffer('\n');
 
-        char str[10];
-        itoa(num, str);
-
-        string_to_buffer(str);
-        char_to_buffer(' ');
-      }
-      char_to_buffer('\r');
-      char_to_buffer('\n');
-
-      HAL_UART_Transmit_IT(&huart1, write_buffer, write_buffer_tail);
-
-      if (++row > N)
-      {
-        char_to_buffer('\r');
-        char_to_buffer('\n');
-        char str[] = "Enter N: \0";
-				string_to_buffer(str);
 				HAL_UART_Transmit_IT(&huart1, write_buffer, write_buffer_tail);
-        
-        HAL_UART_Receive_IT (&huart1, Rx_data, 1);
 
-        row = 1;
-        N = 0;
-      }
-    }
+				if (++row > N)
+				{
+					char_to_buffer('\r');
+					char_to_buffer('\n');
+					char str[] = "Enter N: \0";
+					string_to_buffer(str);
+					HAL_UART_Transmit_IT(&huart1, write_buffer, write_buffer_tail);
+					
+					HAL_UART_Receive_IT (&huart1, Rx_data, 1);
+
+					row = 1;
+					N = 0;
+				}
+			}
+			TIM2_cnt = 0;
+		}
 	}
 }
 
@@ -204,6 +276,34 @@ void indent(int num)
   }
 }
 
+void MAX7219_Write(uint8_t reg, uint8_t data) {
+    uint8_t txData[2];
+    txData[0] = reg;
+    txData[1] = data;
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+    HAL_SPI_Transmit(&hspi1, txData, 2, 100);
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
+}
+
+void MAX7219_Init() {
+    MAX7219_Write(MAX7219_REG_SHUTDOWN, 0x01);      // Exit shutdown mode
+    MAX7219_Write(MAX7219_REG_SCANLIMIT, 0x07);     // Scan all digits
+    MAX7219_Write(MAX7219_REG_DECODEMODE, 0xFF);    // Use BCD decode for all digits
+    MAX7219_Write(MAX7219_REG_DISPLAYTEST, 0x00);   // Disable test mode
+    MAX7219_Write(MAX7219_REG_INTENSITY, 0x0F);     // Set brightness
+		MAX7219_ClearAllDigits(); // Clear Digits
+}
+
+void MAX7219_DisplayNumber(uint8_t digit, uint8_t value) {
+    MAX7219_Write(MAX7219_REG_DIGIT0 + digit, value);
+}
+
+void MAX7219_ClearAllDigits() {
+    for (uint8_t i = 0; i < 8; i++) {
+        MAX7219_Write(MAX7219_REG_DIGIT0 + i, 0x0F); // Send blank code
+    }
+}
+
 /* USER CODE END 0 */
 
 /**
@@ -222,22 +322,23 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-
+	
   /* USER CODE END Init */
 
   /* Configure the system clock */
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-
+	
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_TIM2_Init();
+  MX_SPI1_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-	
+	MAX7219_Init();
   char str[] = "Enter N: \0";
   string_to_buffer(str);
   HAL_UART_Transmit_IT(&huart1, write_buffer, write_buffer_tail);
@@ -300,6 +401,44 @@ void SystemClock_Config(void)
 }
 
 /**
+  * @brief SPI1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_SPI1_Init(void)
+{
+
+  /* USER CODE BEGIN SPI1_Init 0 */
+
+  /* USER CODE END SPI1_Init 0 */
+
+  /* USER CODE BEGIN SPI1_Init 1 */
+
+  /* USER CODE END SPI1_Init 1 */
+  /* SPI1 parameter configuration*/
+  hspi1.Instance = SPI1;
+  hspi1.Init.Mode = SPI_MODE_MASTER;
+  hspi1.Init.Direction = SPI_DIRECTION_2LINES;
+  hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
+  hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
+  hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
+  hspi1.Init.NSS = SPI_NSS_SOFT;
+  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
+  hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
+  hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
+  hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
+  hspi1.Init.CRCPolynomial = 10;
+  if (HAL_SPI_Init(&hspi1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN SPI1_Init 2 */
+
+  /* USER CODE END SPI1_Init 2 */
+
+}
+
+/**
   * @brief TIM2 Initialization Function
   * @param None
   * @retval None
@@ -320,7 +459,7 @@ static void MX_TIM2_Init(void)
   htim2.Instance = TIM2;
   htim2.Init.Prescaler = 16000-1;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 1000-1;
+  htim2.Init.Period = 500-1;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
@@ -384,12 +523,23 @@ static void MX_USART1_UART_Init(void)
   */
 static void MX_GPIO_Init(void)
 {
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
 /* USER CODE BEGIN MX_GPIO_Init_1 */
 /* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin : PA4 */
+  GPIO_InitStruct.Pin = GPIO_PIN_4;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
