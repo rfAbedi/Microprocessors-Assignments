@@ -52,6 +52,7 @@ SPI_HandleTypeDef hspi1;
 TIM_HandleTypeDef htim2;
 
 UART_HandleTypeDef huart1;
+UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 uint8_t Rx_data[10];
@@ -60,7 +61,7 @@ volatile int write_buffer_tail = 0;
 char N_str[10];
 int N_str_tail = 0;
 volatile int N = 0;
-int row = 1;
+volatile int row = 1;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -69,7 +70,7 @@ static void MX_GPIO_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_SPI1_Init(void);
 static void MX_USART1_UART_Init(void);
-void MAX7219_ClearAllDigits();
+static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN PFP */
 int pascal(int row, int col);
 int atoi(char* str);
@@ -81,6 +82,7 @@ void indent(int num);
 void MAX7219_DisplayNumber(uint8_t digit, uint8_t value);
 void MAX7219_Init();
 void MAX7219_Write(uint8_t reg, uint8_t data);
+void MAX7219_ClearAllDigits();
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -101,6 +103,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     N_str[N_str_tail] = '\0';
     N_str_tail = 0;
     N = atoi(N_str);
+		row = N;
 		pascal_output_flag = 0;
 		
 
@@ -119,7 +122,7 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 
 void MAX7219_displayPascal() {
 	if(N == 0) return;
-	int r = N;
+	int r = row;
 	
 	if(pascal_output_flag == 0) {	
 		pcnt = 0;
@@ -189,6 +192,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
 				HAL_UART_Transmit_IT(&huart1, write_buffer, write_buffer_tail);
 
+				
 				if (++row > N)
 				{
 					char_to_buffer('\r');
@@ -337,6 +341,7 @@ int main(void)
   MX_TIM2_Init();
   MX_SPI1_Init();
   MX_USART1_UART_Init();
+  MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 	MAX7219_Init();
   char str[] = "Enter N: \0";
@@ -513,6 +518,39 @@ static void MX_USART1_UART_Init(void)
   /* USER CODE BEGIN USART1_Init 2 */
 
   /* USER CODE END USART1_Init 2 */
+
+}
+
+/**
+  * @brief USART2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART2_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART2_Init 0 */
+
+  /* USER CODE END USART2_Init 0 */
+
+  /* USER CODE BEGIN USART2_Init 1 */
+
+  /* USER CODE END USART2_Init 1 */
+  huart2.Instance = USART2;
+  huart2.Init.BaudRate = 9600;
+  huart2.Init.WordLength = UART_WORDLENGTH_8B;
+  huart2.Init.StopBits = UART_STOPBITS_1;
+  huart2.Init.Parity = UART_PARITY_NONE;
+  huart2.Init.Mode = UART_MODE_TX_RX;
+  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART2_Init 2 */
+
+  /* USER CODE END USART2_Init 2 */
 
 }
 
