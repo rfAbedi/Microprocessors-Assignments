@@ -1,0 +1,21 @@
+﻿  Lab12.cpp
+C:\Users\ROG\Documents\Erfun\University\Semester 5th\Microprocessors and Interface Circuits\HW\Micro-Archive\Lab12\Visual Studio Project\Lab12\Lab12.cpp(17,9): error C4235: nonstandard extension used: '__asm' keyword not supported on this architecture
+C:\Users\ROG\Documents\Erfun\University\Semester 5th\Microprocessors and Interface Circuits\HW\Micro-Archive\Lab12\Visual Studio Project\Lab12\Lab12.cpp(18,13): error C2065: 'mov': undeclared identifier
+C:\Users\ROG\Documents\Erfun\University\Semester 5th\Microprocessors and Interface Circuits\HW\Micro-Archive\Lab12\Visual Studio Project\Lab12\Lab12.cpp(18,17): error C2146: syntax error: missing ';' before identifier 'eax'
+C:\Users\ROG\Documents\Erfun\University\Semester 5th\Microprocessors and Interface Circuits\HW\Micro-Archive\Lab12\Visual Studio Project\Lab12\Lab12.cpp(18,17): error C2065: 'eax': undeclared identifier
+C:\Users\ROG\Documents\Erfun\University\Semester 5th\Microprocessors and Interface Circuits\HW\Micro-Archive\Lab12\Visual Studio Project\Lab12\Lab12.cpp(19,13): error C2146: syntax error: missing ';' before identifier 'mov'
+C:\Users\ROG\Documents\Erfun\University\Semester 5th\Microprocessors and Interface Circuits\HW\Micro-Archive\Lab12\Visual Studio Project\Lab12\Lab12.cpp(19,13): error C2065: 'mov': undeclared identifier
+C:\Users\ROG\Documents\Erfun\University\Semester 5th\Microprocessors and Interface Circuits\HW\Micro-Archive\Lab12\Visual Studio Project\Lab12\Lab12.cpp(19,17): error C2146: syntax error: missing ';' before identifier 'ebx'
+C:\Users\ROG\Documents\Erfun\University\Semester 5th\Microprocessors and Interface Circuits\HW\Micro-Archive\Lab12\Visual Studio Project\Lab12\Lab12.cpp(19,17): error C2065: 'ebx': undeclared identifier
+C:\Users\ROG\Documents\Erfun\University\Semester 5th\Microprocessors and Interface Circuits\HW\Micro-Archive\Lab12\Visual Studio Project\Lab12\Lab12.cpp(20,13): error C2146: syntax error: missing ';' before identifier 'mov'
+C:\Users\ROG\Documents\Erfun\University\Semester 5th\Microprocessors and Interface Circuits\HW\Micro-Archive\Lab12\Visual Studio Project\Lab12\Lab12.cpp(20,13): error C2065: 'mov': undeclared identifier
+C:\Users\ROG\Documents\Erfun\University\Semester 5th\Microprocessors and Interface Circuits\HW\Micro-Archive\Lab12\Visual Studio Project\Lab12\Lab12.cpp(20,17): error C2146: syntax error: missing ';' before identifier 'ecx'
+C:\Users\ROG\Documents\Erfun\University\Semester 5th\Microprocessors and Interface Circuits\HW\Micro-Archive\Lab12\Visual Studio Project\Lab12\Lab12.cpp(20,17): error C2065: 'ecx': undeclared identifier
+C:\Users\ROG\Documents\Erfun\University\Semester 5th\Microprocessors and Interface Circuits\HW\Micro-Archive\Lab12\Visual Studio Project\Lab12\Lab12.cpp(22,9): error C2146: syntax error: missing ';' before identifier 'LOOP'
+C:\Users\ROG\Documents\Erfun\University\Semester 5th\Microprocessors and Interface Circuits\HW\Micro-Archive\Lab12\Visual Studio Project\Lab12\Lab12.cpp(23,13): error C2065: 'movaps': undeclared identifier
+C:\Users\ROG\Documents\Erfun\University\Semester 5th\Microprocessors and Interface Circuits\HW\Micro-Archive\Lab12\Visual Studio Project\Lab12\Lab12.cpp(23,20): error C2146: syntax error: missing ';' before identifier 'xmm0'
+C:\Users\ROG\Documents\Erfun\University\Semester 5th\Microprocessors and Interface Circuits\HW\Micro-Archive\Lab12\Visual Studio Project\Lab12\Lab12.cpp(23,20): error C2065: 'xmm0': undeclared identifier
+C:\Users\ROG\Documents\Erfun\University\Semester 5th\Microprocessors and Interface Circuits\HW\Micro-Archive\Lab12\Visual Studio Project\Lab12\Lab12.cpp(23,31): error C2760: syntax error: '+' was unexpected here; expected ','
+C:\Users\ROG\Documents\Erfun\University\Semester 5th\Microprocessors and Interface Circuits\HW\Micro-Archive\Lab12\Visual Studio Project\Lab12\Lab12.cpp(23,33): error C2065: 'ecx': undeclared identifier
+C:\Users\ROG\Documents\Erfun\University\Semester 5th\Microprocessors and Interface Circuits\HW\Micro-Archive\Lab12\Visual Studio Project\Lab12\Lab12.cpp(23,36): error C2059: syntax error: ']'
+C:\Users\ROG\Documents\Erfun\University\Semester 5th\Microprocessors and Interface Circuits\HW\Micro-Archive\Lab12\Visual Studio Project\Lab12\Lab12.cpp(49,18): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
