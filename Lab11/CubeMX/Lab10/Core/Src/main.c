@@ -52,7 +52,6 @@ SPI_HandleTypeDef hspi1;
 TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim3;
 
-UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
@@ -70,7 +69,6 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_SPI1_Init(void);
-static void MX_USART1_UART_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_TIM3_Init(void);
 /* USER CODE BEGIN PFP */
@@ -90,15 +88,15 @@ void MAX7219_ClearAllDigits();
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-int pascal_output[30], pcnt, pascal_output_flag = 0, pointer;
+int pascal_output[1000], pcnt, pascal_output_flag = 0, pointer;
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) 
 {
   if (Rx_data[0] != '\r')
   {
     N_str[N_str_tail++] = Rx_data[0];
-    HAL_UART_Transmit_IT(&huart1, Rx_data, 1);
-    HAL_UART_Receive_IT (&huart1, Rx_data, 1);
+    HAL_UART_Transmit_IT(&huart2, Rx_data, 1);
+    HAL_UART_Receive_IT (&huart2, Rx_data, 1);
   }
   else
   {
@@ -111,7 +109,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
     char_to_buffer('\r');
     char_to_buffer('\n');
-    HAL_UART_Transmit_IT(&huart1, write_buffer, write_buffer_tail);
+    HAL_UART_Transmit_IT(&huart2, write_buffer, write_buffer_tail);
   }
 }
 
@@ -153,7 +151,7 @@ void MAX7219_displayPascal() {
 	}
 	
 	int k = pointer;
-	for(int i=0; i<8; i++) {
+	for(int i=7; i>=0; i--) {
 		if(k >= pcnt) {
 			k = 0;
 		}
@@ -167,47 +165,48 @@ void MAX7219_displayPascal() {
 }
 
 
-volatile int TIM2_cnt = 0, display_flag = 0;
+volatile int TIM2_cnt = 0, display_flag = 0, first_flag = 1;
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-	if (htim->Instance == TIM2)
-	{
-		//MAX7219_displayPascal();
-		if (row <= N)
-		{
-			indent(N - row);
-			
-			for (int i = 1; i <= row; i++) // Origin: i = 1
-			{
-				int num = pascal(row, i);
-				char str[10];
-				itoa(num, str);
-				
-				string_to_buffer(str);
-				char_to_buffer(' ');
-			}
-			char_to_buffer('\r');
-			char_to_buffer('\n');
+//	if (htim->Instance == TIM2 && first_flag == 1)
+//	{
+//		//MAX7219_displayPascal();
+//		if (row <= N)
+//		{
+//			indent(N - row);
+//			
+//			for (int i = 1; i <= row; i++) // Origin: i = 1
+//			{
+//				int num = pascal(row, i);
+//				char str[10];
+//				itoa(num, str);
+//				
+//				string_to_buffer(str);
+//				char_to_buffer(' ');
+//			}
+//			char_to_buffer('\r');
+//			char_to_buffer('\n');
 
-			HAL_UART_Transmit_IT(&huart1, write_buffer, write_buffer_tail);
+//			HAL_UART_Transmit_IT(&huart2, write_buffer, write_buffer_tail);
 
-			
-			if (++row > N)
-			{
-				char_to_buffer('\r');
-				char_to_buffer('\n');
-				char str[] = "Enter N: \0";
-				string_to_buffer(str);
-				HAL_UART_Transmit_IT(&huart1, write_buffer, write_buffer_tail);
-				
-				HAL_UART_Receive_IT (&huart1, Rx_data, 1);
+//			
+////			if (++row > N)
+////			{
+////				char_to_buffer('\r');
+////				char_to_buffer('\n');
+////				char str[] = "Enter N: \0";
+////				string_to_buffer(str);
+////				HAL_UART_Transmit_IT(&huart2, write_buffer, write_buffer_tail);
+////				
+////				HAL_UART_Receive_IT (&huart2, Rx_data, 1);
 
-				row = 1;
-				N = 0;
-			}
-		}
-	}
-	else if(htim->Instance == TIM3) {
+////				row = N;
+////				//N = 0;
+////			}
+//		}
+//		first_flag = 0;
+//	}
+	if(htim->Instance == TIM3) {
 		MAX7219_displayPascal();
 	}
 }
@@ -340,16 +339,15 @@ int main(void)
   MX_GPIO_Init();
   MX_TIM2_Init();
   MX_SPI1_Init();
-  MX_USART1_UART_Init();
   MX_USART2_UART_Init();
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
 	MAX7219_Init();
   char str[] = "Enter N: \0";
   string_to_buffer(str);
-  HAL_UART_Transmit_IT(&huart1, write_buffer, write_buffer_tail);
+  HAL_UART_Transmit_IT(&huart2, write_buffer, write_buffer_tail);
 
-	HAL_UART_Receive_IT (&huart1, Rx_data, 1);
+	HAL_UART_Receive_IT (&huart2, Rx_data, 1);
 	HAL_TIM_Base_Start_IT(&htim2);
 	HAL_TIM_Base_Start_IT(&htim3);
 	
@@ -511,7 +509,7 @@ static void MX_TIM3_Init(void)
   htim3.Instance = TIM3;
   htim3.Init.Prescaler = 16000-1;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = 50-1;
+  htim3.Init.Period = 500-1;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
@@ -532,39 +530,6 @@ static void MX_TIM3_Init(void)
   /* USER CODE BEGIN TIM3_Init 2 */
 
   /* USER CODE END TIM3_Init 2 */
-
-}
-
-/**
-  * @brief USART1 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_USART1_UART_Init(void)
-{
-
-  /* USER CODE BEGIN USART1_Init 0 */
-
-  /* USER CODE END USART1_Init 0 */
-
-  /* USER CODE BEGIN USART1_Init 1 */
-
-  /* USER CODE END USART1_Init 1 */
-  huart1.Instance = USART1;
-  huart1.Init.BaudRate = 9600;
-  huart1.Init.WordLength = UART_WORDLENGTH_8B;
-  huart1.Init.StopBits = UART_STOPBITS_1;
-  huart1.Init.Parity = UART_PARITY_NONE;
-  huart1.Init.Mode = UART_MODE_TX_RX;
-  huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-  huart1.Init.OverSampling = UART_OVERSAMPLING_16;
-  if (HAL_UART_Init(&huart1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN USART1_Init 2 */
-
-  /* USER CODE END USART1_Init 2 */
 
 }
 
