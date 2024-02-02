@@ -1,0 +1,101 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: µVision V5.38.0.0
+Copyright (C) 2022 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: Erfan Abedi, rfAbedi, LIC=PE7DL-0F5KF-FWV2N-YV1NX-2XWRP-2DUZT
+ 
+Tool Versions:
+Toolchain:       MDK-ARM Plus  Version: 5.38.0.0
+Toolchain Path:  C:\Program Files\Keil_v5\ARM\ARMCLANG\Bin
+C Compiler:      ArmClang.exe V6.19
+Assembler:       Armasm.exe V6.19
+Linker/Locator:  ArmLink.exe V6.19
+Library Manager: ArmAr.exe V6.19
+Hex Converter:   FromElf.exe V6.19
+CPU DLL:         SARMCM3.DLL V5.38.0.0
+Dialog DLL:      DCM.DLL V1.17.5.0
+Target DLL:      STLink\ST-LINKIII-KEIL_SWO.dll V3.1.0.0
+Dialog DLL:      TCM.DLL V1.56.4.0
+ 
+<h2>Project:</h2>
+C:\Users\ROG\Documents\Erfun\University\Semester 5th\Microprocessors and Interface Circuits\HW\Micro-Archive\Project\Controller\MDK-ARM\controller.uvprojx
+Project File Date:  02/03/2024
+
+<h2>Output:</h2>
+*** Using Compiler 'V6.19', folder: 'C:\Program Files\Keil_v5\ARM\ARMCLANG\Bin'
+Rebuild target 'controller'
+../Core/Src/main.c(95): warning: passing 'int8_t[1]' (aka 'signed char[1]') to parameter of type 'uint8_t *' (aka 'unsigned char *') converts between pointers to integer types with different sign [-Wpointer-sign]
+      HAL_UART_Receive_IT (&huart1, Rx_data, 1);
+                                    ^~~~~~~
+../Drivers/STM32F4xx_HAL_Driver/Inc\stm32f4xx_hal_uart.h(725): note: passing argument to parameter 'pData' here
+HAL_StatusTypeDef HAL_UART_Receive_IT(UART_HandleTypeDef *huart, uint8_t *pData, uint16_t Size);
+                                                                          ^
+../Core/Src/main.c(127): warning: passing 'volatile char[10]' to parameter of type 'char *' discards qualifiers [-Wincompatible-pointer-types-discards-qualifiers]
+  LCD_String(score_str);
+             ^~~~~~~~~
+../Core/Inc\lcd.h(27): note: passing argument to parameter here
+void LCD_String(char*);
+                     ^
+../Core/Src/main.c(180): warning: passing 'int8_t[1]' (aka 'signed char[1]') to parameter of type 'uint8_t *' (aka 'unsigned char *') converts between pointers to integer types with different sign [-Wpointer-sign]
+        HAL_UART_Receive_IT (&huart1, Rx_data, 1);
+                                      ^~~~~~~
+../Drivers/STM32F4xx_HAL_Driver/Inc\stm32f4xx_hal_uart.h(725): note: passing argument to parameter 'pData' here
+HAL_StatusTypeDef HAL_UART_Receive_IT(UART_HandleTypeDef *huart, uint8_t *pData, uint16_t Size);
+                                                                          ^
+3 warnings generated.
+compiling main.c...
+compiling stm32f4xx_hal_flash_ex.c...
+assembling startup_stm32f401xe.s...
+compiling stm32f4xx_hal_rcc.c...
+compiling stm32f4xx_hal_msp.c...
+compiling stm32f4xx_it.c...
+compiling stm32f4xx_hal_flash_ramfunc.c...
+compiling stm32f4xx_hal_tim_ex.c...
+compiling stm32f4xx_hal_rcc_ex.c...
+compiling stm32f4xx_hal_tim.c...
+compiling lcd.c...
+compiling stm32f4xx_hal_flash.c...
+compiling stm32f4xx_hal_gpio.c...
+compiling stm32f4xx_hal_dma_ex.c...
+compiling stm32f4xx_hal_pwr_ex.c...
+compiling stm32f4xx_hal_pwr.c...
+compiling stm32f4xx_hal_cortex.c...
+compiling stm32f4xx_hal_dma.c...
+compiling system_stm32f4xx.c...
+compiling stm32f4xx_hal.c...
+compiling stm32f4xx_hal_exti.c...
+compiling stm32f4xx_hal_uart.c...
+linking...
+Program Size: Code=7162 RO-data=478 RW-data=12 ZI-data=1812  
+FromELF: creating hex file...
+"controller\controller.axf" - 0 Error(s), 3 Warning(s).
+
+<h2>Software Packages used:</h2>
+
+Package Vendor: ARM
+                http://www.keil.com/pack/ARM.CMSIS.5.9.0.pack
+                ARM.CMSIS.5.9.0
+                CMSIS (Common Microcontroller Software Interface Standard)
+   * Component: CORE Version: 5.6.0
+
+Package Vendor: Keil
+                http://www.keil.com/pack/Keil.STM32F4xx_DFP.2.16.0.pack
+                Keil.STM32F4xx_DFP.2.16.0
+                STMicroelectronics STM32F4 Series Device Support, Drivers and Examples
+
+<h2>Collection of Component include folders:</h2>
+  ./RTE/_controller
+  C:/Users/ROG/AppData/Local/Arm/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include
+  C:/Users/ROG/AppData/Local/Arm/Packs/Keil/STM32F4xx_DFP/2.16.0/Drivers/CMSIS/Device/ST/STM32F4xx/Include
+
+<h2>Collection of Component Files used:</h2>
+
+   * Component: ARM::CMSIS:CORE:5.6.0
+      Include file:  CMSIS/Core/Include/tz_context.h
+Build Time Elapsed:  00:00:02
+</pre>
+</body>
+</html>
