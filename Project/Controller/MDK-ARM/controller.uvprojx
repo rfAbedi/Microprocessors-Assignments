@@ -412,7 +412,12 @@
             <File>
               <FileName>lcd.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Core\Src\lcd.c</FilePath>
+              <FilePath>..\..\..\..\..\..\..\..\..\..\Desktop\microprocessor-project-main\controller\Core\Src\lcd.c</FilePath>
+            </File>
+            <File>
+              <FileName>lcd.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\..\..\..\..\..\..\..\..\Desktop\microprocessor-project-main\controller\Core\Src\lcd.h</FilePath>
             </File>
           </Files>
         </Group>

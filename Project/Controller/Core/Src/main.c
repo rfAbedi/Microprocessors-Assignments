@@ -46,17 +46,14 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 uint8_t Rx_data[1];
-uint8_t write_buffer[2000];
+uint8_t write_buffer[5];
 volatile int write_buffer_tail = 0;
 
-volatile char score_str[10];
-int score_str_tail = 0;
-int state_recieved = 0;
+volatile int score = 0;
 volatile int is_over = 0;
 volatile int is_started = 0;
 
@@ -66,10 +63,11 @@ volatile int is_started = 0;
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
-static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN PFP */
 
 void display_score();
+void itoa(int num, char* str);
+int intlen(int num);
 void string_to_buffer(char* str);
 void char_to_buffer(char c);
 
@@ -79,29 +77,15 @@ void char_to_buffer(char c);
 /* USER CODE BEGIN 0 */
  void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) 
 {
-  if (Rx_data[0] != '$')
-  {
-    if (state_recieved == 0)
-    {
-      is_over = Rx_data[0] == Game_Over ? 1 : 0;
+  is_over = Rx_data[0] == Game_Over ? 1 : 0;
+  is_started = (is_over == 0);
 
-      is_started = (is_over == 0);
+  if (is_over == 0)
+    score++;
 
-      state_recieved = 1;
-    }
-    else
-    {
-      score_str[score_str_tail++] = Rx_data[0];
-      HAL_UART_Receive_IT (&huart1, Rx_data, 1);
-    }
-  }
-  else
-  {
-    score_str[score_str_tail] = '\0';
-    display_score();
-    score_str_tail = 0;
-    state_recieved = 0;
-  }
+  display_score();
+
+  HAL_UART_Receive_IT (&huart2, Rx_data, 1);
 }
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
@@ -115,16 +99,20 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
   if (GPIO_Pin == GPIO_PIN_0 && is_started)
   {
     char_to_buffer(Jump);
-    HAL_UART_Transmit_IT(&huart1, write_buffer, write_buffer_tail);
+    HAL_UART_Transmit_IT(&huart2, write_buffer, write_buffer_tail);
   }
 }
 
 void display_score()
 {
+  char score_str[10];
+  itoa(score, score_str);
+
   LCD_ClearDisplay();
   LCD_GoToLine(1);
   LCD_String("Score: ");
   LCD_String(score_str);
+
   if (is_over)
   {
     LCD_GoToLine(2);
@@ -132,12 +120,35 @@ void display_score()
   }
 }
 
-void string_to_buffer(char* str)
+void itoa(int num, char* str)
 {
-  for (int i = 0; str[i] != '\0'; i++)
+  if (num == 0)
   {
-    write_buffer[write_buffer_tail++] = str[i];
+    str[0] = '0';
+    str[1] = '\0';
+    return;
   }
+
+  int i = intlen(num);
+  str[i--] = '\0';
+
+  while (num != 0)
+  {
+    int rem = num % 10;
+    str[i--] = rem + '0';
+    num = num/10;
+  }
+}
+
+int intlen(int num)
+{
+  int len = 0;
+  while (num != 0)
+  {
+    num = num/10;
+    len++;
+  }
+  return len;
 }
 
 void char_to_buffer(char c)
@@ -175,9 +186,8 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART2_UART_Init();
-  MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-	HAL_UART_Receive_IT (&huart1, Rx_data, 1);
+	HAL_UART_Receive_IT (&huart2, Rx_data, 1);
   
 	initLCD();
 	
@@ -246,39 +256,6 @@ void SystemClock_Config(void)
 }
 
 /**
-  * @brief USART1 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_USART1_UART_Init(void)
-{
-
-  /* USER CODE BEGIN USART1_Init 0 */
-
-  /* USER CODE END USART1_Init 0 */
-
-  /* USER CODE BEGIN USART1_Init 1 */
-
-  /* USER CODE END USART1_Init 1 */
-  huart1.Instance = USART1;
-  huart1.Init.BaudRate = 9600;
-  huart1.Init.WordLength = UART_WORDLENGTH_8B;
-  huart1.Init.StopBits = UART_STOPBITS_1;
-  huart1.Init.Parity = UART_PARITY_NONE;
-  huart1.Init.Mode = UART_MODE_TX_RX;
-  huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-  huart1.Init.OverSampling = UART_OVERSAMPLING_16;
-  if (HAL_UART_Init(&huart1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN USART1_Init 2 */
-
-  /* USER CODE END USART1_Init 2 */
-
-}
-
-/**
   * @brief USART2 Initialization Function
   * @param None
   * @retval None
@@ -329,7 +306,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7|GPIO_PIN_8, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7|GPIO_PIN_8|GPIO_PIN_9, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10|GPIO_PIN_4|GPIO_PIN_5, GPIO_PIN_RESET);
@@ -343,8 +320,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PA7 PA8 */
-  GPIO_InitStruct.Pin = GPIO_PIN_7|GPIO_PIN_8;
+  /*Configure GPIO pins : PA7 PA8 PA9 */
+  GPIO_InitStruct.Pin = GPIO_PIN_7|GPIO_PIN_8|GPIO_PIN_9;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;

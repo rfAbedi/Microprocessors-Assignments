@@ -1,6 +1,6 @@
 #include "main.h"
 
-#define RS_Pin GPIO_PIN_7
+#define RS_Pin GPIO_PIN_9
 #define RS_GPIO_Port GPIOA
 #define EN_Pin GPIO_PIN_7
 #define EN_GPIO_Port GPIOC
