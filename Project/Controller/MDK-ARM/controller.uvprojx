@@ -410,14 +410,14 @@
               <FilePath>../Core/Src/stm32f4xx_hal_msp.c</FilePath>
             </File>
             <File>
-              <FileName>lcd.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\..\..\..\..\..\Desktop\microprocessor-project-main\controller\Core\Src\lcd.c</FilePath>
-            </File>
-            <File>
               <FileName>lcd.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\..\..\..\..\..\Desktop\microprocessor-project-main\controller\Core\Src\lcd.h</FilePath>
+              <FilePath>..\Core\Inc\lcd.h</FilePath>
+            </File>
+            <File>
+              <FileName>lcd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Src\lcd.c</FilePath>
             </File>
           </Files>
         </Group>

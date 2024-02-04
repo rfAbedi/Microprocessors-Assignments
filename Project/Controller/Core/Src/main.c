@@ -49,13 +49,14 @@
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-uint8_t Rx_data[1];
-uint8_t write_buffer[5];
+uint8_t Rx_data[10];
+uint8_t write_buffer[10];
 volatile int write_buffer_tail = 0;
 
 volatile int score = 0;
 volatile int is_over = 0;
 volatile int is_started = 0;
+volatile int display = 0;
 
 /* USER CODE END PV */
 
@@ -77,15 +78,13 @@ void char_to_buffer(char c);
 /* USER CODE BEGIN 0 */
  void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) 
 {
-  is_over = Rx_data[0] == Game_Over ? 1 : 0;
+  is_over = Rx_data[0] == 'O' ? 1 : 0;
   is_started = (is_over == 0);
 
   if (is_over == 0)
     score++;
-
-  display_score();
-
-  HAL_UART_Receive_IT (&huart2, Rx_data, 1);
+	
+	display = 1;
 }
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
@@ -99,7 +98,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
   if (GPIO_Pin == GPIO_PIN_0 && is_started)
   {
     char_to_buffer(Jump);
-    HAL_UART_Transmit_IT(&huart2, write_buffer, write_buffer_tail);
+    HAL_UART_Transmit_IT(&huart2, write_buffer, 1);
   }
 }
 
@@ -153,7 +152,7 @@ int intlen(int num)
 
 void char_to_buffer(char c)
 {
-  write_buffer[write_buffer_tail++] = c;
+  write_buffer[write_buffer_tail++] = (uint8_t) c;
 }
 /* USER CODE END 0 */
 
@@ -190,7 +189,7 @@ int main(void)
 	HAL_UART_Receive_IT (&huart2, Rx_data, 1);
   
 	initLCD();
-	
+	LCD_ClearDisplay();
 	LCD_String("Welcome To");
   LCD_GoToLine(2);
   LCD_String("Flappy Shayan");
@@ -201,7 +200,14 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-		
+		if (display)
+		{
+			display_score();
+			HAL_UART_Receive_IT (&huart2, Rx_data, 1);
+			char_to_buffer('O');
+			HAL_UART_Transmit_IT(&huart2, write_buffer, 1);
+			display = 0;
+		}
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -340,6 +346,10 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
