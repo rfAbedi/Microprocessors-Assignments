@@ -78,7 +78,10 @@ void char_to_buffer(char c);
 /* USER CODE BEGIN 0 */
  void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) 
 {
-  is_over = Rx_data[0] == 'O' ? 1 : 0;
+	if(Rx_data[0] == 'O')
+		is_over = 1;
+	else if (Rx_data[0] == 'P')
+		is_over = 0;
   is_started = (is_over == 0);
 
   if (is_over == 0)
@@ -204,8 +207,8 @@ int main(void)
 		{
 			display_score();
 			HAL_UART_Receive_IT (&huart2, Rx_data, 1);
-			char_to_buffer('O');
-			HAL_UART_Transmit_IT(&huart2, write_buffer, 1);
+			//char_to_buffer('O');
+			//HAL_UART_Transmit_IT(&huart2, write_buffer, 1);
 			display = 0;
 		}
     /* USER CODE END WHILE */
