@@ -2,7 +2,7 @@
 
 This repository contains assignment and lab work on microprocessor and integrated circuits course.
 
-## 🛠️ Technologies & Tools Used
+## Technologies & Tools Used
 
 - **Assembly (8086)**  
 - **Assembly (ARM)**  
@@ -13,13 +13,13 @@ This repository contains assignment and lab work on microprocessor and integrate
 - **Proteus** (circuit simulation / virtual prototyping)  
 - **Fritzing** (breadboard / wiring diagrams)  
 
-## 📂 Repository Structure
+## Repository Structure
 
 - `LabX/` — Each lab folder includes source code, documentation, schematics, and simulation files.  
 - `Project/` — The larger-scale project assignment.  
 - `Quiz1/` — Smaller exercise files. 
 
-## 🚀 How to Run
+## How to Run
 
 Each lab or project has its own README (or instructions) inside its folder. In general, the workflow is:
 
