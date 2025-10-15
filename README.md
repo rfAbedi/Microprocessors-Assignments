@@ -1,6 +1,8 @@
 # Microprocessors-Assignments
 
-This repository contains assignment and lab work on microprocessor and integrated circuits course.
+Assignments for **Microprocessor and Integrated Circuits**
+Instructor: *Dr. attarzadeh*
+University: Shahid Beheshti University (SBU)
 
 ## Technologies & Tools Used
 
