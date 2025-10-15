@@ -1,7 +1,7 @@
 # Microprocessors-Assignments
 
 + Assignments for **Microprocessor and Integrated Circuits**
-+ Instructor: *Dr. attarzadeh*
++ Instructor: *Dr. Attarzadeh*
 + University: Shahid Beheshti University (SBU)
 
 ## Technologies & Tools Used
